@@ -16,5 +16,8 @@ Frontend:
 http-server
 ```
 
-Backend is running on http://localhost:3012
-Frontend is running on http://localhost:8080
+## Vercel
+
+api/transfer.js
+
+- created is for vercel deployment
