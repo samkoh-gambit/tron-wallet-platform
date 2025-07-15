@@ -15,6 +15,7 @@ async function getBalance() {
 }
 
 export default async function handler(req, res) {
+  console.log('[TRON] Incoming request:', req.method, req.url, req.body);
   if (req.method === 'GET') {
     try {
       const balance = await getBalance();

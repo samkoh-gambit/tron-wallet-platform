@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Multi-Token Bulk Transfer - TRON Shasta</title>
+    <title>Multi-Token Bulk Transfer - Ethereum Sepolia</title>
     <style>
       :root {
-        --primary-color: #ff5722;
-        --primary-hover: #e64a19;
+        --primary-color: #1976d2;
+        --primary-hover: #1565c0;
         --success-color: #28a745;
         --danger-color: #dc3545;
         --warning-bg: #fff3cd;
@@ -19,256 +19,255 @@
         --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
       }
 
-      * {
-        box-sizing: border-box;
-      }
+* {
+  box-sizing: border-box;
+}
 
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.5;
-        color: var(--text-color);
-        background-color: #fff;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: #fff;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-      h1 {
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        color: var(--primary-color);
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 0.5rem;
-      }
+h1 {
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
 
-      .card {
-        background-color: #fff;
-        border-radius: 0.5rem;
-        box-shadow: var(--box-shadow);
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        border: 1px solid var(--border-color);
-      }
+.card {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: var(--box-shadow);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+}
 
-      .form-group {
-        margin-bottom: 1rem;
-      }
+.form-group {
+  margin-bottom: 1rem;
+}
 
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-      }
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
 
-      input[type="text"],
-      textarea {
-        width: 100%;
-        padding: 0.75rem;
-        border-radius: 0.25rem;
-        border: 1px solid var(--border-color);
-        transition: border-color 0.15s ease-in-out;
-        font-size: 1rem;
-      }
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+  transition: border-color 0.15s ease-in-out;
+  font-size: 1rem;
+}
 
-      input[type="text"]:focus,
-      textarea:focus {
-        border-color: var(--primary-color);
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.25);
-      }
+input[type="text"]:focus,
+textarea:focus {
+  border-color: var(--primary-color);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.25);
+}
 
-      textarea {
-        height: 150px;
-        resize: vertical;
-      }
+textarea {
+  height: 150px;
+  resize: vertical;
+}
 
-      button {
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        cursor: pointer;
-        padding: 0.75rem 1.25rem;
-        border-radius: 0.25rem;
-        font-size: 1rem;
-        font-weight: 600;
-        width: 100%;
-        transition: background-color 0.15s ease-in-out;
-        margin-top: 1rem;
-      }
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 100%;
+  transition: background-color 0.15s ease-in-out;
+  margin-top: 1rem;
+}
 
-      button:hover {
-        background-color: var(--primary-hover);
-      }
+button:hover {
+  background-color: var(--primary-hover);
+}
 
-      .status-container {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: 0.25rem;
-        min-height: 100px;
-        background-color: var(--light-gray);
-      }
+.status-container {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  min-height: 100px;
+  background-color: var(--light-gray);
+}
 
-      .radio-group {
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        background-color: var(--light-gray);
-        border-radius: 0.25rem;
-      }
+.radio-group {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: var(--light-gray);
+  border-radius: 0.25rem;
+}
 
-      .radio-container {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
+.radio-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
 
-      .radio-container input {
-        width: auto;
-        margin-right: 0.5rem;
-      }
+.radio-container input {
+  width: auto;
+  margin-right: 0.5rem;
+}
 
-      .transaction-success {
-        color: var(--success-color);
-        margin-bottom: 0.25rem;
-      }
+.transaction-success {
+  color: var(--success-color);
+  margin-bottom: 0.25rem;
+}
 
-      .transaction-failure {
-        color: var(--danger-color);
-        margin-bottom: 0.25rem;
-      }
+.transaction-failure {
+  color: var(--danger-color);
+  margin-bottom: 0.25rem;
+}
 
-      .transaction-link a {
-        color: var(--primary-color);
-        text-decoration: none;
-      }
+.transaction-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
 
-      .transaction-link a:hover {
-        text-decoration: underline;
-      }
-      .status-header {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 10px;
-      }
+.transaction-link a:hover {
+  text-decoration: underline;
+}
+.status-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
 
-      .clear-button {
-        background-color: #6c757d;
-        color: white;
-        padding: 0.375rem 0.75rem;
-        border: none;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        font-size: 0.875rem;
-        width: auto;
-        margin-top: 0;
-      }
+.clear-button {
+  background-color: #6c757d;
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  width: auto;
+  margin-top: 0;
+}
 
-      .clear-button:hover {
-        background-color: #5a6268;
-      }
+.clear-button:hover {
+  background-color: #5a6268;
+}
 
-      .timestamp {
-        color: #666;
-        font-size: 0.9em;
-        font-family: monospace;
-        margin-right: 8px;
-      }
+.timestamp {
+  color: #666;
+  font-size: 0.9em;
+  font-family: monospace;
+  margin-right: 8px;
+}
 
-      .status-container {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: 0.25rem;
-        min-height: 100px;
-        background-color: var(--light-gray);
-        display: flex;
-        flex-direction: column;
-        max-height: 400px; /* Add max height */
-        overflow-y: auto; /* Enable scrolling */
-      }
+.status-container {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  min-height: 100px;
+  background-color: var(--light-gray);
+  display: flex;
+  flex-direction: column;
+  max-height: 400px; /* Add max height */
+  overflow-y: auto; /* Enable scrolling */
+}
 
-      .status-container > div {
-        margin: 4px 0;
-        padding: 4px 0;
-        border-bottom: 1px solid #eee;
-      }
+.status-container > div {
+  margin: 4px 0;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+}
 
-      .status-container > div:first-child {
-        border-top: none;
-      }
+.status-container > div:first-child {
+  border-top: none;
+}
 
-      .chain-select {
-        padding: 0.4rem 1.2rem 0.4rem 0.5rem;
-        border-radius: 0.25rem;
-        border: 1px solid var(--border-color);
-        font-size: 1rem;
-        background: #fff url('data:image/svg+xml;utf8,<svg fill="%23ff5722" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 9.293a1 1 0 011.414 0L10 10.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 0.75rem center/1rem 1rem;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        cursor: pointer;
-      }
-      .chain-select:focus {
-        border-color: var(--primary-color);
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.15);
-      }
-      
-      .wallet-info {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        background-color: var(--light-gray);
-        border-radius: 0.25rem;
-        border: 1px solid var(--border-color);
-      }
+.chain-select {
+  padding: 0.4rem 1.2rem 0.4rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+  font-size: 1rem;
+  background: #fff url('data:image/svg+xml;utf8,<svg fill="%23ff5722" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 9.293a1 1 0 011.414 0L10 10.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 0.75rem center/1rem 1rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+.chain-select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.15);
+}
 
-      .wallet-balance {
-        margin-left: auto;
-        font-weight: 600;
-      }
+.wallet-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: var(--light-gray);
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+}
 
-      .refresh-button {
-        background-color: var(--primary-color);
-        color: white;
-        padding: 0.25rem 0.5rem;
-        border: none;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        font-size: 0.875rem;
-        margin-left: 0.5rem;
-        width: auto;
-      }
+.wallet-balance {
+  margin-left: auto;
+  font-weight: 600;
+}
 
-      .refresh-button:hover {
-        background-color: var(--primary-hover);
-      }
+.refresh-button {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+  width: auto;
+}
 
-      .low-balance {
-        color: var(--danger-color);
-      }
-    </style>
+.refresh-button:hover {
+  background-color: var(--primary-hover);
+}
+
+.low-balance {
+  color: var(--danger-color);
+}
+</style>
   </head>
-
   <body>
     <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem;">
       <label for="chainSelect" style="margin-right: 0.5rem; font-weight: 600;">Chain:</label>
       <select id="chainSelect" class="chain-select">
-        <option value="tron" selected>TRON (Shasta)</option>
-        <option value="sepolia">Ethereum Sepolia</option>
+        <option value="tron">TRON (Shasta)</option>
+        <option value="sepolia" selected>Ethereum Sepolia</option>
         <option value="amoy">Polygon Amoy</option>
       </select>
     </div>
-    <h1>Multi-Token Bulk Transfer - TRON Shasta</h1>
+    <h1>Multi-Token Bulk Transfer - Ethereum Sepolia</h1>
     
     <div class="wallet-info">
       <div>
         <strong>Wallet:</strong> <span id="walletAddress">Loading...</span>
       </div>
       <div class="wallet-balance">
-        <strong>Balance:</strong> <span id="walletBalance">Loading...</span> TRX
+        <strong>Balance:</strong> <span id="walletBalance">Loading...</span> ETH
         <button id="refreshBalance" class="refresh-button">↻</button>
       </div>
     </div>
@@ -279,12 +278,21 @@
         <div class="radio-container">
           <input
             type="radio"
-            id="tokenTypeTRC20"
+            id="tokenTypeUSDT"
             name="tokenType"
-            value="trc20"
+            value="usdt"
             checked
           />
-          <label for="tokenTypeTRC20">TRC-20 Token (USDT)</label>
+          <label for="tokenTypeUSDT">USDT (ERC-20)</label>
+        </div>
+        <div class="radio-container">
+          <input
+            type="radio"
+            id="tokenTypeOKK"
+            name="tokenType"
+            value="okk"
+          />
+          <label for="tokenTypeOKK">OKK (ERC-20)</label>
         </div>
         <div class="radio-container">
           <input
@@ -293,7 +301,7 @@
             name="tokenType"
             value="native"
           />
-          <label for="tokenTypeNative">Native TRX</label>
+          <label for="tokenTypeNative">Native ETH</label>
         </div>
       </div>
 
@@ -302,8 +310,8 @@
         <input
           type="text"
           id="tokenAddress"
-          placeholder="Enter TRC-20 token contract address"
-          value="TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs"
+          placeholder="Enter ERC-20 token contract address (USDT or OKK)"
+          value="0xbDeaD2A70Fe794D2f97b37EFDE497e68974a296d"
         />
       </div>
 
@@ -312,7 +320,7 @@
           >Recipient Addresses and Amounts (one per line, format:
           address,amount):</label
         >
-        <textarea id="transferData" placeholder="T...address,amount"></textarea>
+        <textarea id="transferData" placeholder="0x...address,amount"></textarea>
       </div>
 
       <button id="sendButton">Send Tokens</button>
@@ -337,7 +345,7 @@
         if (val === 'amoy') window.location.href = 'pol.html';
       });
 
-      // Show/hide token address field based on selection
+      // Show/hide token address field and set default address based on selection
       document.querySelectorAll('input[name="tokenType"]').forEach((radio) => {
         radio.addEventListener("change", () => {
           const tokenType = document.querySelector(
@@ -346,16 +354,24 @@
           const tokenAddressContainer = document.getElementById(
             "tokenAddressContainer"
           );
-          tokenAddressContainer.style.display =
-            tokenType === "trc20" ? "block" : "none";
+          const tokenAddressInput = document.getElementById("tokenAddress");
+          if (tokenType === "usdt") {
+            tokenAddressContainer.style.display = "block";
+            tokenAddressInput.value = "0xbDeaD2A70Fe794D2f97b37EFDE497e68974a296d";
+          } else if (tokenType === "okk") {
+            tokenAddressContainer.style.display = "block";
+            tokenAddressInput.value = "0xC360c5E1aF4f29ECA6322813F4c5122A42a2E129";
+          } else {
+            tokenAddressContainer.style.display = "none";
+          }
         });
       });
-      
+
       // Fetch wallet balance
       async function fetchWalletBalance() {
         try {
-          const endpoint = "/api/transfer";
-          // const endpoint = "http://localhost:4100/api/transfer";
+          const endpoint = "/api/eth-transfer";
+          // const endpoint = "http://localhost:4100/api/eth-transfer";
           const response = await fetch(endpoint);
           const data = await response.json();
           
@@ -366,8 +382,8 @@
           // Update wallet address
           document.getElementById("walletAddress").textContent = data.address;
           
-          // Add low balance warning if below 10 TRX
-          if (parseFloat(data.balance) < 10) {
+          // Add low balance warning if below 0.05 ETH
+          if (parseFloat(data.balance) < 0.05) {
             balanceElement.classList.add("low-balance");
             updateStatus("⚠️ Wallet balance is low. Please top up the wallet.", "error");
           } else {
@@ -413,7 +429,7 @@
               .map((item) => item.trim());
 
             if (!address || isNaN(amount)) {
-              updateStatus(`❌ Invalid input line: ${line}`, "error");
+              updateStatus(`❌ Invalid input line: ${line}` , "error");
               return;
             }
 
@@ -432,7 +448,7 @@
             amounts,
           };
 
-          if (tokenType === "trc20") {
+          if (tokenType === "usdt" || tokenType === "okk") {
             const tokenAddress = document
               .getElementById("tokenAddress")
               .value.trim();
@@ -443,14 +459,15 @@
               );
               return;
             }
-
             payload.tokenAddress = tokenAddress;
+            payload.type = "erc20";
+          } else {
+            payload.type = tokenType;
           }
 
           // For Vercel, use a single endpoint and add a 'type' field
-          // const endpoint = "/api/transfer";
-          const endpoint = "http://localhost:4100/api/transfer";
-          payload.type = tokenType;
+          // const endpoint = "/api/eth-transfer";
+          const endpoint = "http://localhost:4100/api/eth-transfer";
 
           try {
             updateStatus("🚀 Sending transactions... Please wait.");
@@ -466,7 +483,7 @@
             const result = await response.json();
 
             if (!response.ok) {
-              updateStatus(`❌ Server error: ${result.error}`, "error");
+              updateStatus(`❌ Server error: ${result.error}` , "error");
               return;
             }
 
@@ -480,12 +497,12 @@
             results.forEach((tx) => {
               if (tx.success) {
                 updateStatus(
-                  `✅ Sent ${tx.amount} to ${tx.recipient}. <a href="${tx.explorerLink}" target="_blank">View TX</a>`,
+                  `✅ Sent ${tx.amount} to ${tx.recipient}. <a href=\"${tx.explorerLink}\" target=\"_blank\">View TX</a>`,
                   "success"
                 );
               } else {
                 updateStatus(
-                  `❌ Failed to send ${tx.amount} to ${tx.recipient}: ${tx.error}`,
+                  `❌ Failed to send ${tx.amount} to ${tx.recipient}: ${tx.error}` ,
                   "error"
                 );
               }
@@ -494,7 +511,7 @@
             // Refresh balance after transactions
             setTimeout(fetchWalletBalance, 2000);
           } catch (error) {
-            updateStatus(`❌ Network error: ${error.message}`, "error");
+            updateStatus(`❌ Network error: ${error.message}` , "error");
           }
         });
 
@@ -514,7 +531,7 @@
         const timestamp = now.toLocaleTimeString();
 
         // Create message with timestamp
-        messageElement.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+        messageElement.innerHTML = `<span class=\"timestamp\">[${timestamp}]</span> ${message}`;
 
         if (type === "success") {
           messageElement.classList.add("transaction-success");
@@ -535,9 +552,17 @@
         const tokenAddressContainer = document.getElementById(
           "tokenAddressContainer"
         );
-        tokenAddressContainer.style.display =
-          tokenType === "trc20" ? "block" : "none";
+        const tokenAddressInput = document.getElementById("tokenAddress");
+        if (tokenType === "usdt") {
+          tokenAddressContainer.style.display = "block";
+          tokenAddressInput.value = "0xbDeaD2A70Fe794D2f97b37EFDE497e68974a296d";
+        } else if (tokenType === "okk") {
+          tokenAddressContainer.style.display = "block";
+          tokenAddressInput.value = "0xC360c5E1aF4f29ECA6322813F4c5122A42a2E129";
+        } else {
+          tokenAddressContainer.style.display = "none";
+        }
       })();
     </script>
   </body>
-</html>
+</html> 
