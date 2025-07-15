@@ -354,8 +354,8 @@ button:hover {
       // Fetch wallet balance
       async function fetchWalletBalance() {
         try {
-          // const endpoint = "/api/pol-transfer";
-          const endpoint = "http://localhost:4100/api/pol-transfer";
+          const endpoint = "/api/pol-transfer";
+          // const endpoint = "http://localhost:4100/api/pol-transfer";
           const response = await fetch(endpoint);
           const data = await response.json();
           
