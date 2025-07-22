@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Token circle -->
+  <circle cx="10.4" cy="16" r="5.2" fill="#ff5722" opacity="0.9"/>
+  <!-- Arrow pointing right -->
+  <path d="M15.6 10.4l7.8 5.2-7.8 5.2" stroke="#ff5722" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Small dots representing multiple transfers -->
+  <circle cx="17.4" cy="8.7" r="1.3" fill="#ff5722" opacity="0.7"/>
+  <circle cx="20.8" cy="23.3" r="1.3" fill="#ff5722" opacity="0.7"/>
+</svg> 
