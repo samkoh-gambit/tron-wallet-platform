@@ -1,6 +1,7 @@
 import express from 'express';
 import ethTransferHandler from './eth-transfer.js';
 import polTransferHandler from './pol-transfer.js';
+import bscTransferHandler from './bsc-transfer.js';
 import tronTransferHandler from './transfer.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -16,9 +17,11 @@ app.use(cors());
 // Expose the same endpoints as before
 app.post('/api/eth-transfer', ethTransferHandler);
 app.post('/api/pol-transfer', polTransferHandler);
-app.get('/api/pol-transfer', polTransferHandler); 
-app.get('/api/eth-transfer', ethTransferHandler); 
+app.post('/api/bsc-transfer', bscTransferHandler);
 app.post('/api/transfer', tronTransferHandler);
+app.get('/api/pol-transfer', polTransferHandler); 
+app.get('/api/eth-transfer', ethTransferHandler);
+app.get('/api/bsc-transfer', bscTransferHandler);
 app.get('/api/transfer', tronTransferHandler);
 
 const PORT = process.env.PORT || 4100;

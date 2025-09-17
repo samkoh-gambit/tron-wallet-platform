@@ -252,26 +252,145 @@ button:hover {
 .low-balance {
   color: var(--danger-color);
 }
+
+/* Chain image styling */
+h1 img {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom dropdown styling */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+  min-width: 200px;
+}
+
+.dropdown-selected {
+  display: flex;
+  align-items: center;
+  padding: 0.4rem 1.2rem 0.4rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.dropdown-selected:hover {
+  border-color: var(--primary-color);
+}
+
+.dropdown-selected .chain-logo {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+
+.dropdown-selected span:not(.dropdown-arrow) {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  color: #666;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  box-shadow: var(--box-shadow);
+  z-index: 1000;
+  display: none;
+  margin-top: 2px;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.dropdown-option:hover {
+  background-color: var(--light-gray);
+}
+
+.dropdown-option.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.dropdown-option .chain-logo {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+
+.dropdown-option span {
+  font-size: 1rem;
+}
+
+.custom-dropdown.open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown.open .dropdown-options {
+  display: block;
+}
 </style>
   </head>
 
   <body>
     <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem;">
       <label for="chainSelect" style="margin-right: 0.5rem; font-weight: 600;">Chain:</label>
-      <select id="chainSelect" class="chain-select">
-        <option value="tron">TRON (Shasta)</option>
-        <option value="sepolia">Ethereum Sepolia</option>
-        <option value="amoy" selected>Polygon Amoy</option>
-      </select>
+      <div class="custom-dropdown" id="chainDropdown">
+        <div class="dropdown-selected" id="dropdownSelected">
+          <img src="/assets/POL.png" alt="POL" class="chain-logo">
+          <span>Polygon Amoy</span>
+          <span class="dropdown-arrow">▼</span>
+        </div>
+        <div class="dropdown-options" id="dropdownOptions">
+          <div class="dropdown-option" data-value="tron">
+            <img src="/assets/TRX.png" alt="TRX" class="chain-logo">
+            <span>TRON (Shasta)</span>
+          </div>
+          <div class="dropdown-option" data-value="bsc">
+            <img src="/assets/BNB.png" alt="BNB" class="chain-logo">
+            <span>Binance Smart Chain</span>
+          </div>
+          <div class="dropdown-option" data-value="sepolia">
+            <img src="/assets/ETH.png" alt="ETH" class="chain-logo">
+            <span>Ethereum Sepolia</span>
+          </div>
+          <div class="dropdown-option active" data-value="amoy">
+            <img src="/assets/POL.png" alt="POL" class="chain-logo">
+            <span>Polygon Amoy</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <h1>Multi-Token Bulk Transfer - Polygon Amoy</h1>
+    <h1>
+      <img src="/assets/POL.png" alt="POL" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
+      Multi-Token Bulk Transfer - Polygon Amoy
+    </h1>
     
     <div class="wallet-info">
       <div>
         <strong>Wallet:</strong> <span id="walletAddress">0x44b2b682507c75a0B6129a6CaC518A6098ACEfCC</span>
       </div>
       <div class="wallet-balance">
-        <strong>Balance:</strong> <span id="walletBalance">Loading...</span> MATIC
+        <strong>Balance:</strong> <span id="walletBalance">Loading...</span>
         <button id="refreshBalance" class="refresh-button">↻</button>
       </div>
     </div>
@@ -333,11 +452,64 @@ button:hover {
     </div>
 
     <script>
-      document.getElementById('chainSelect').addEventListener('change', function() {
-        const val = this.value;
-        if (val === 'tron') window.location.href = 'index.html';
-        if (val === 'sepolia') window.location.href = 'eth.html';
-        if (val === 'amoy') window.location.href = 'pol.html';
+      // Wait for DOM to be ready
+      document.addEventListener('DOMContentLoaded', function() {
+        // Custom dropdown functionality
+        const dropdown = document.getElementById('chainDropdown');
+        const dropdownSelected = document.getElementById('dropdownSelected');
+        const dropdownOptions = document.getElementById('dropdownOptions');
+        
+        // Check if elements exist
+        if (!dropdown || !dropdownSelected || !dropdownOptions) {
+          console.error('Dropdown elements not found');
+          return;
+        }
+        
+        const options = dropdownOptions.querySelectorAll('.dropdown-option');
+        console.log('Found', options.length, 'dropdown options');
+
+        // Toggle dropdown
+        dropdownSelected.addEventListener('click', function(e) {
+          e.stopPropagation();
+          console.log('Dropdown clicked');
+          dropdown.classList.toggle('open');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+          if (!dropdown.contains(event.target)) {
+            dropdown.classList.remove('open');
+          }
+        });
+
+        // Handle option selection
+        options.forEach(option => {
+          option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const value = this.getAttribute('data-value');
+            console.log('Option clicked:', value);
+            
+            // Update selected display
+            const logo = this.querySelector('.chain-logo').src;
+            const text = this.querySelector('span').textContent;
+            
+            dropdownSelected.querySelector('.chain-logo').src = logo;
+            dropdownSelected.querySelector('span:not(.dropdown-arrow)').textContent = text;
+            
+            // Update active state
+            options.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Close dropdown
+            dropdown.classList.remove('open');
+            
+            // Navigate to selected chain
+            if (value === 'tron') window.location.href = 'index.html';
+            if (value === 'bsc') window.location.href = 'bsc.html';
+            if (value === 'sepolia') window.location.href = 'eth.html';
+            if (value === 'amoy') window.location.href = 'pol.html';
+          });
+        });
       });
 
       // Show/hide token address field based on selection
@@ -364,7 +536,7 @@ button:hover {
           
           const balanceElement = document.getElementById("walletBalance");
           const balance = parseFloat(data.balance).toFixed(4);
-          balanceElement.textContent = balance;
+          balanceElement.textContent = `${balance} MATIC`;
           
           // Update wallet address
           document.getElementById("walletAddress").textContent = data.address;
