@@ -543,8 +543,8 @@ h1 img {
       // Fetch wallet balance
       async function fetchWalletBalance() {
         try {
-          // const endpoint = "/api/transfer";
-          const endpoint = "http://localhost:4100/api/transfer";
+          const endpoint = "/api/transfer";
+          // const endpoint = "http://localhost:4100/api/transfer";
           const response = await fetch(endpoint);
           const data = await response.json();
           
@@ -643,8 +643,8 @@ h1 img {
           }
 
           // For Vercel, use a single endpoint and add a 'type' field
-          // const endpoint = "/api/transfer";
-          const endpoint = "http://localhost:4100/api/transfer";
+          const endpoint = "/api/transfer";
+          // const endpoint = "http://localhost:4100/api/transfer";
           payload.type = tokenType;
 
           try {
