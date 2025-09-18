@@ -14,13 +14,30 @@ async function getBalance() {
   return balance;
 }
 
+async function getUSDTBalance() {
+  try {
+    const usdtContractAddress = 'TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs';
+    const contract = await tronWeb.contract().at(usdtContractAddress);
+    const balance = await contract.balanceOf(tronWeb.defaultAddress.base58).call();
+    // USDT has 6 decimals, so we need to divide by 1,000,000
+    // Convert BigInt to Number properly
+    const balanceNumber = Number(balance.toString());
+    return balanceNumber / 1000000;
+  } catch (error) {
+    console.error('Error fetching USDT balance:', error);
+    return 0;
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const balance = await getBalance();
+      const usdtBalance = await getUSDTBalance();
       res.json({
         address: tronWeb.defaultAddress.base58,
-        balance: tronWeb.fromSun(balance)
+        balance: tronWeb.fromSun(balance),
+        usdtBalance: usdtBalance
       });
       return;
     } catch (error) {

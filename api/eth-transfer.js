@@ -9,16 +9,53 @@ const wallet = new ethers.Wallet(privateKey, provider);
 
 const ERC20_ABI = [
   'function transfer(address to, uint256 value) public returns (bool)',
-  'function decimals() view returns (uint8)'
+  'function decimals() view returns (uint8)',
+  'function balanceOf(address account) view returns (uint256)'
 ];
 
+async function getUSDTBalance() {
+  try {
+    const usdtContractAddress = '0xbDeaD2A70Fe794D2f97b37EFDE497e68974a296d'; // USDT on Sepolia
+    const contract = new ethers.Contract(usdtContractAddress, ERC20_ABI, provider);
+    const balance = await contract.balanceOf(wallet.address);
+    const decimals = await contract.decimals();
+    
+    // Convert from wei to token units
+    return parseFloat(ethers.formatUnits(balance, decimals));
+  } catch (error) {
+    console.error('Error fetching USDT balance:', error);
+    return 0;
+  }
+}
+
+async function getOKKBalance() {
+  try {
+    const okkContractAddress = '0xC360c5E1aF4f29ECA6322813F4c5122A42a2E129'; // OKK on Sepolia
+    const contract = new ethers.Contract(okkContractAddress, ERC20_ABI, provider);
+    const balance = await contract.balanceOf(wallet.address);
+    const decimals = await contract.decimals();
+    
+    // Convert from wei to token units
+    return parseFloat(ethers.formatUnits(balance, decimals));
+  } catch (error) {
+    console.error('Error fetching OKK balance:', error);
+    return 0;
+  }
+}
+
 export default async function handler(req, res) {
+  console.log('[ETH] Incoming request:', req.method, req.url, req.body);
+  
   if (req.method === 'GET') {
     try {
       const balance = await provider.getBalance(wallet.address);
+      const usdtBalance = await getUSDTBalance();
+      const okkBalance = await getOKKBalance();
       res.json({
         address: wallet.address,
-        balance: ethers.formatEther(balance)
+        balance: ethers.formatEther(balance),
+        usdtBalance: usdtBalance,
+        okkBalance: okkBalance
       });
       return;
     } catch (error) {

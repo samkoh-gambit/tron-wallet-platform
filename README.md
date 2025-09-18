@@ -1,13 +1,13 @@
 # Tron Wallet Portal
 
-This folder contains frontend (index.html) and backend (main.js) for the tron wallet automation.
+This folder contains frontend (index.html) and backend (server.js) for the tron wallet automation.
 
 ## To run locally
 
 Backend:
 
 ```
-node main.js
+node server.js
 ```
 
 Frontend:

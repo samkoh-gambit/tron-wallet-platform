@@ -9,16 +9,53 @@ const wallet = new ethers.Wallet(privateKey, provider);
 
 const ERC20_ABI = [
   'function transfer(address to, uint256 value) public returns (bool)',
-  'function decimals() view returns (uint8)'
+  'function decimals() view returns (uint8)',
+  'function balanceOf(address account) view returns (uint256)'
 ];
+
+async function getUSDTBalance() {
+  try {
+    // Try multiple testnet token addresses
+    const testTokens = [
+      '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd', // Original USDT testnet
+      // '0x55d398326f99059fF775485246999027B3197955', // Mainnet USDT (might work on testnet)
+      // '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'  // USDC on BSC (alternative)
+    ];
+    
+    for (const tokenAddress of testTokens) {
+      try {
+        const contract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
+        const balance = await contract.balanceOf(wallet.address);
+        const decimals = await contract.decimals();
+        
+        // Convert from wei to token units
+        const formattedBalance = parseFloat(ethers.formatUnits(balance, decimals));
+        
+        if (formattedBalance > 0) {
+          return formattedBalance;
+        }
+      } catch (tokenError) {
+        continue;
+      }
+    }
+    
+    return 0;
+  } catch (error) {
+    console.error('Error fetching USDT balance:', error);
+    return 0;
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const balance = await provider.getBalance(wallet.address);
+      const usdtBalance = await getUSDTBalance();
+      
       res.json({
         address: wallet.address,
-        balance: ethers.formatEther(balance)
+        balance: ethers.formatEther(balance),
+        usdtBalance: usdtBalance
       });
       return;
     } catch (error) {

@@ -32,7 +32,7 @@
         line-height: 1.5;
         color: var(--text-color);
         background-color: #fff;
-        max-width: 800px;
+        max-width: 960px;
         margin: 0 auto;
         padding: 20px;
       }
@@ -253,6 +253,11 @@
   color: var(--danger-color);
 }
 
+.wallet-balance {
+  color: #000000;
+  font-weight: 600;
+}
+
 /* Chain image styling */
 h1 img {
   border-radius: 4px;
@@ -390,7 +395,16 @@ h1 img {
         <strong>Wallet:</strong> <span id="walletAddress">Loading...</span>
       </div>
       <div class="wallet-balance">
-        <strong>Balance:</strong> <span id="walletBalance">Loading...</span>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 0.25rem 0; text-align: left;"><strong>TRX Balance:</strong></td>
+            <td style="padding: 0.25rem 5px; text-align: left;"><span id="walletBalance">Loading...</span></td>
+          </tr>
+          <tr>
+            <td style="padding: 0.25rem 0; text-align: left;"><strong>USDT Balance:</strong></td>
+            <td style="padding: 0.25rem 5px; text-align: left;"><span id="usdtBalance" class="wallet-balance">Loading...</span></td>
+          </tr>
+        </table>
         <button id="refreshBalance" class="refresh-button">↻</button>
       </div>
     </div>
@@ -529,14 +543,19 @@ h1 img {
       // Fetch wallet balance
       async function fetchWalletBalance() {
         try {
-          const endpoint = "/api/transfer";
-          // const endpoint = "http://localhost:4100/api/transfer";
+          // const endpoint = "/api/transfer";
+          const endpoint = "http://localhost:4100/api/transfer";
           const response = await fetch(endpoint);
           const data = await response.json();
           
           const balanceElement = document.getElementById("walletBalance");
           const balance = parseFloat(data.balance).toFixed(4);
           balanceElement.textContent = `${balance} TRX`;
+          
+          // Update USDT balance
+          const usdtBalanceElement = document.getElementById("usdtBalance");
+          const usdtBalance = parseFloat(data.usdtBalance || 0).toFixed(2);
+          usdtBalanceElement.textContent = `${usdtBalance} USDT`;
           
           // Update wallet address
           document.getElementById("walletAddress").textContent = data.address;
@@ -551,6 +570,7 @@ h1 img {
         } catch (error) {
           console.error("Error fetching wallet balance:", error);
           document.getElementById("walletBalance").textContent = "Error";
+          document.getElementById("usdtBalance").textContent = "Error";
         }
       }
 
@@ -623,8 +643,8 @@ h1 img {
           }
 
           // For Vercel, use a single endpoint and add a 'type' field
-          const endpoint = "/api/transfer";
-          // const endpoint = "http://localhost:4100/api/transfer";
+          // const endpoint = "/api/transfer";
+          const endpoint = "http://localhost:4100/api/transfer";
           payload.type = tokenType;
 
           try {

@@ -9,16 +9,35 @@ const wallet = new ethers.Wallet(privateKey, provider);
 
 const ERC20_ABI = [
   'function transfer(address to, uint256 value) public returns (bool)',
-  'function decimals() view returns (uint8)'
+  'function decimals() view returns (uint8)',
+  'function balanceOf(address account) view returns (uint256)'
 ];
 
+async function getUSDTBalance() {
+  try {
+    const usdtContractAddress = '0x4fD77Bc61A06fB4194Fa40245E090035FDAbb556'; // OKK token on Polygon Amoy
+    const contract = new ethers.Contract(usdtContractAddress, ERC20_ABI, provider);
+    const balance = await contract.balanceOf(wallet.address);
+    const decimals = await contract.decimals();
+    // Convert from wei to token units
+    return parseFloat(ethers.formatUnits(balance, decimals));
+  } catch (error) {
+    console.error('Error fetching USDT balance:', error);
+    return 0;
+  }
+}
+
 export default async function handler(req, res) {
+  console.log('[POL] Incoming request:', req.method, req.url, req.body);
+  
   if (req.method === 'GET') {
     try {
       const balance = await provider.getBalance(wallet.address);
+      const usdtBalance = await getUSDTBalance();
       res.json({
         address: wallet.address,
-        balance: ethers.formatEther(balance)
+        balance: ethers.formatEther(balance),
+        usdtBalance: usdtBalance
       });
       return;
     } catch (error) {
@@ -26,7 +45,7 @@ export default async function handler(req, res) {
       return;
     }
   }
-
+  
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
