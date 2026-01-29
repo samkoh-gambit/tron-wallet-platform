@@ -19,7 +19,7 @@ async function getUSDTBalance() {
     const contract = new ethers.Contract(usdtContractAddress, ERC20_ABI, provider);
     const balance = await contract.balanceOf(wallet.address);
     const decimals = await contract.decimals();
-    
+
     // Convert from wei to token units
     return parseFloat(ethers.formatUnits(balance, decimals));
   } catch (error) {
@@ -34,7 +34,7 @@ async function getOKKBalance() {
     const contract = new ethers.Contract(okkContractAddress, ERC20_ABI, provider);
     const balance = await contract.balanceOf(wallet.address);
     const decimals = await contract.decimals();
-    
+
     // Convert from wei to token units
     return parseFloat(ethers.formatUnits(balance, decimals));
   } catch (error) {
@@ -43,19 +43,35 @@ async function getOKKBalance() {
   }
 }
 
+async function getIMYRTokenBalance() {
+  try {
+    const imyrTokenContractAddress = '0x250AF871Fc8831f2B08c0d0e72C73aC4970F53e0';
+    const contract = new ethers.Contract(imyrTokenContractAddress, ERC20_ABI, provider);
+    const balance = await contract.balanceOf(wallet.address);
+    const decimals = await contract.decimals();
+
+    return parseFloat(ethers.formatUnits(balance, decimals));
+  } catch (error) {
+    console.error('Error fetching IMYR Token balance:', error);
+    return 0;
+  }
+}
+
 export default async function handler(req, res) {
   console.log('[ETH] Incoming request:', req.method, req.url, req.body);
-  
+
   if (req.method === 'GET') {
     try {
       const balance = await provider.getBalance(wallet.address);
       const usdtBalance = await getUSDTBalance();
       const okkBalance = await getOKKBalance();
+      const imyrTokenBalance = await getIMYRTokenBalance();
       res.json({
         address: wallet.address,
         balance: ethers.formatEther(balance),
         usdtBalance: usdtBalance,
-        okkBalance: okkBalance
+        okkBalance: okkBalance,
+        imyrTokenBalance: imyrTokenBalance
       });
       return;
     } catch (error) {
@@ -63,7 +79,7 @@ export default async function handler(req, res) {
       return;
     }
   }
-  
+
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;

@@ -1,729 +1,523 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Multi-Token Bulk Transfer - TRON Shasta</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
-    <style>
-      :root {
-        --primary-color: #ff5722;
-        --primary-hover: #e64a19;
-        --success-color: #28a745;
-        --danger-color: #dc3545;
-        --warning-bg: #fff3cd;
-        --warning-border: #ffeeba;
-        --warning-text: #856404;
-        --light-gray: #f8f9fa;
-        --border-color: #dee2e6;
-        --text-color: #212529;
-        --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-      }
 
-      * {
-        box-sizing: border-box;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Token Bulk Transfer - TRON Shasta</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+  <style>
+    :root {
+      --primary-color: #ff5722;
+      --primary-hover: #e64a19;
+      --success-color: #28a745;
+      --danger-color: #dc3545;
+      --warning-bg: #fff3cd;
+      --warning-border: #ffeeba;
+      --warning-text: #856404;
+      --light-gray: #f8f9fa;
+      --border-color: #dee2e6;
+      --text-color: #212529;
+      --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
 
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.5;
-        color: var(--text-color);
-        background-color: #fff;
-        max-width: 960px;
-        margin: 0 auto;
-        padding: 20px;
-      }
+    * {
+      box-sizing: border-box;
+    }
 
-      h1 {
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        color: var(--primary-color);
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 0.5rem;
-      }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+      color: var(--text-color);
+      background-color: #fff;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-      .card {
-        background-color: #fff;
-        border-radius: 0.5rem;
-        box-shadow: var(--box-shadow);
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        border: 1px solid var(--border-color);
-      }
+    h1 {
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
 
-      .form-group {
-        margin-bottom: 1rem;
-      }
+    .card {
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: var(--box-shadow);
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
 
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-      }
+    .form-group {
+      margin-bottom: 1rem;
+    }
 
-      input[type="text"],
-      textarea {
-        width: 100%;
-        padding: 0.75rem;
-        border-radius: 0.25rem;
-        border: 1px solid var(--border-color);
-        transition: border-color 0.15s ease-in-out;
-        font-size: 1rem;
-      }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
 
-      input[type="text"]:focus,
-      textarea:focus {
-        border-color: var(--primary-color);
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.25);
-      }
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border-color);
+      transition: border-color 0.15s ease-in-out;
+      font-size: 1rem;
+    }
 
-      textarea {
-        height: 150px;
-        resize: vertical;
-      }
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--primary-color);
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.25);
+    }
 
-      button {
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        cursor: pointer;
-        padding: 0.75rem 1.25rem;
-        border-radius: 0.25rem;
-        font-size: 1rem;
-        font-weight: 600;
-        width: 100%;
-        transition: background-color 0.15s ease-in-out;
-        margin-top: 1rem;
-      }
+    textarea {
+      height: 150px;
+      resize: vertical;
+    }
 
-      button:hover {
-        background-color: var(--primary-hover);
-      }
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      transition: background-color 0.15s ease-in-out;
+      margin-top: 1rem;
+    }
 
-      .status-container {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: 0.25rem;
-        min-height: 100px;
-        background-color: var(--light-gray);
-      }
+    button:hover {
+      background-color: var(--primary-hover);
+    }
 
-      .radio-group {
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        background-color: var(--light-gray);
-        border-radius: 0.25rem;
-      }
+    .status-container {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0.25rem;
+      min-height: 100px;
+      background-color: var(--light-gray);
+    }
 
-      .radio-container {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
+    .radio-group {
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background-color: var(--light-gray);
+      border-radius: 0.25rem;
+    }
 
-      .radio-container input {
-        width: auto;
-        margin-right: 0.5rem;
-      }
+    .radio-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
 
-      .transaction-success {
-        color: var(--success-color);
-        margin-bottom: 0.25rem;
-      }
+    .radio-container input {
+      width: auto;
+      margin-right: 0.5rem;
+    }
 
-      .transaction-failure {
-        color: var(--danger-color);
-        margin-bottom: 0.25rem;
-      }
+    .transaction-success {
+      color: var(--success-color);
+      margin-bottom: 0.25rem;
+    }
 
-      .transaction-link a {
-        color: var(--primary-color);
-        text-decoration: none;
-      }
+    .transaction-failure {
+      color: var(--danger-color);
+      margin-bottom: 0.25rem;
+    }
 
-      .transaction-link a:hover {
-        text-decoration: underline;
-      }
-      .status-header {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 10px;
-      }
+    .transaction-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
 
-      .clear-button {
-        background-color: #6c757d;
-        color: white;
-        padding: 0.375rem 0.75rem;
-        border: none;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        font-size: 0.875rem;
-        width: auto;
-        margin-top: 0;
-      }
+    .transaction-link a:hover {
+      text-decoration: underline;
+    }
 
-      .clear-button:hover {
-        background-color: #5a6268;
-      }
+    .status-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
 
-      .timestamp {
-        color: #666;
-        font-size: 0.9em;
-        font-family: monospace;
-        margin-right: 8px;
-      }
+    .clear-button {
+      background-color: #6c757d;
+      color: white;
+      padding: 0.375rem 0.75rem;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      width: auto;
+      margin-top: 0;
+    }
 
-      .status-container {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: 0.25rem;
-        min-height: 100px;
-        background-color: var(--light-gray);
-        display: flex;
-        flex-direction: column;
-        max-height: 400px; /* Add max height */
-        overflow-y: auto; /* Enable scrolling */
-      }
+    .clear-button:hover {
+      background-color: #5a6268;
+    }
 
-      .status-container > div {
-        margin: 4px 0;
-        padding: 4px 0;
-        border-bottom: 1px solid #eee;
-      }
+    .timestamp {
+      color: #666;
+      font-size: 0.9em;
+      font-family: monospace;
+      margin-right: 8px;
+    }
 
-      .status-container > div:first-child {
-        border-top: none;
-      }
+    .status-container {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0.25rem;
+      min-height: 100px;
+      background-color: var(--light-gray);
+      display: flex;
+      flex-direction: column;
+      max-height: 400px;
+      /* Add max height */
+      overflow-y: auto;
+      /* Enable scrolling */
+    }
 
-      .chain-select {
-        padding: 0.4rem 1.2rem 0.4rem 0.5rem;
-        border-radius: 0.25rem;
-        border: 1px solid var(--border-color);
-        font-size: 1rem;
-        background: #fff url('data:image/svg+xml;utf8,<svg fill="%23ff5722" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 9.293a1 1 0 011.414 0L10 10.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 0.75rem center/1rem 1rem;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        cursor: pointer;
-      }
-      .chain-select:focus {
-        border-color: var(--primary-color);
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.15);
-      }
-      
-      .wallet-info {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        background-color: var(--light-gray);
-        border-radius: 0.25rem;
-        border: 1px solid var(--border-color);
-      }
+    .status-container>div {
+      margin: 4px 0;
+      padding: 4px 0;
+      border-bottom: 1px solid #eee;
+    }
 
-      .wallet-balance {
-        margin-left: auto;
-        font-weight: 600;
-      }
+    .status-container>div:first-child {
+      border-top: none;
+    }
 
-      .refresh-button {
-        background-color: var(--primary-color);
-        color: white;
-        padding: 0.25rem 0.5rem;
-        border: none;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        font-size: 0.875rem;
-        margin-left: 0.5rem;
-        width: auto;
-      }
+    .chain-select {
+      padding: 0.4rem 1.2rem 0.4rem 0.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+      background: #fff url('data:image/svg+xml;utf8,<svg fill="%23ff5722" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 9.293a1 1 0 011.414 0L10 10.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 0.75rem center/1rem 1rem;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+    }
 
-      .refresh-button:hover {
-        background-color: var(--primary-hover);
-      }
+    .chain-select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.15);
+    }
 
-.low-balance {
-  color: var(--danger-color);
-}
+    .wallet-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background-color: var(--light-gray);
+      border-radius: 0.25rem;
+      border: 1px solid var(--border-color);
+    }
 
-.wallet-balance {
-  color: #000000;
-  font-weight: 600;
-}
+    .wallet-balance {
+      margin-left: auto;
+      font-weight: 600;
+    }
 
-/* Chain image styling */
-h1 img {
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+    .refresh-button {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      margin-left: 0.5rem;
+      width: auto;
+    }
 
-/* Custom dropdown styling */
-.custom-dropdown {
-  position: relative;
-  display: inline-block;
-  min-width: 200px;
-}
+    .refresh-button:hover {
+      background-color: var(--primary-hover);
+    }
 
-.dropdown-selected {
-  display: flex;
-  align-items: center;
-  padding: 0.4rem 1.2rem 0.4rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--border-color);
-  background: #fff;
-  cursor: pointer;
-  transition: border-color 0.15s ease-in-out;
-}
+    .low-balance {
+      color: var(--danger-color);
+    }
 
-.dropdown-selected:hover {
-  border-color: var(--primary-color);
-}
+    .wallet-balance {
+      color: #000000;
+      font-weight: 600;
+    }
 
-.dropdown-selected .chain-logo {
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  border-radius: 2px;
-}
+    /* Chain image styling */
+    h1 img {
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-.dropdown-selected span:not(.dropdown-arrow) {
-  flex: 1;
-  font-size: 1rem;
-}
+    /* Custom dropdown styling */
+    .custom-dropdown {
+      position: relative;
+      display: inline-block;
+      min-width: 200px;
+    }
 
-.dropdown-arrow {
-  font-size: 0.8rem;
-  color: #666;
-  transition: transform 0.2s ease;
-}
+    .dropdown-selected {
+      display: flex;
+      align-items: center;
+      padding: 0.4rem 1.2rem 0.4rem 0.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border-color);
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.15s ease-in-out;
+    }
 
-.dropdown-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 1px solid var(--border-color);
-  border-radius: 0.25rem;
-  box-shadow: var(--box-shadow);
-  z-index: 1000;
-  display: none;
-  margin-top: 2px;
-}
+    .dropdown-selected:hover {
+      border-color: var(--primary-color);
+    }
 
-.dropdown-option {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
+    .dropdown-selected .chain-logo {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      border-radius: 2px;
+    }
 
-.dropdown-option:hover {
-  background-color: var(--light-gray);
-}
+    .dropdown-selected span:not(.dropdown-arrow) {
+      flex: 1;
+      font-size: 1rem;
+    }
 
-.dropdown-option.active {
-  background-color: var(--primary-color);
-  color: white;
-}
+    .dropdown-arrow {
+      font-size: 0.8rem;
+      color: #666;
+      transition: transform 0.2s ease;
+    }
 
-.dropdown-option .chain-logo {
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  border-radius: 2px;
-}
+    .dropdown-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 0.25rem;
+      box-shadow: var(--box-shadow);
+      z-index: 1000;
+      display: none;
+      margin-top: 2px;
+    }
 
-.dropdown-option span {
-  font-size: 1rem;
-}
+    .dropdown-option {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
 
-.custom-dropdown.open .dropdown-arrow {
-  transform: rotate(180deg);
-}
+    .dropdown-option:hover {
+      background-color: var(--light-gray);
+    }
 
-.custom-dropdown.open .dropdown-options {
-  display: block;
-}
-    </style>
-  </head>
+    .dropdown-option.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
 
-  <body>
-    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem;">
-      <label for="chainSelect" style="margin-right: 0.5rem; font-weight: 600;">Chain:</label>
-      <div class="custom-dropdown" id="chainDropdown">
-        <div class="dropdown-selected" id="dropdownSelected">
+    .dropdown-option .chain-logo {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      border-radius: 2px;
+    }
+
+    .dropdown-option span {
+      font-size: 1rem;
+    }
+
+    .custom-dropdown.open .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .custom-dropdown.open .dropdown-options {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem;">
+    <label for="chainSelect" style="margin-right: 0.5rem; font-weight: 600;">Chain:</label>
+    <div class="custom-dropdown" id="chainDropdown">
+      <div class="dropdown-selected" id="dropdownSelected">
+        <img src="/assets/TRX.png" alt="TRX" class="chain-logo">
+        <span>TRON (Shasta)</span>
+        <span class="dropdown-arrow">▼</span>
+      </div>
+      <div class="dropdown-options" id="dropdownOptions">
+        <div class="dropdown-option active" data-value="tron">
           <img src="/assets/TRX.png" alt="TRX" class="chain-logo">
           <span>TRON (Shasta)</span>
-          <span class="dropdown-arrow">▼</span>
         </div>
-        <div class="dropdown-options" id="dropdownOptions">
-          <div class="dropdown-option active" data-value="tron">
-            <img src="/assets/TRX.png" alt="TRX" class="chain-logo">
-            <span>TRON (Shasta)</span>
-          </div>
-          <div class="dropdown-option" data-value="sepolia">
-            <img src="/assets/ETH.png" alt="ETH" class="chain-logo">
-            <span>Ethereum Sepolia</span>
-          </div>
-          <div class="dropdown-option" data-value="amoy">
-            <img src="/assets/POL.png" alt="POL" class="chain-logo">
-            <span>Polygon Amoy</span>
-          </div>
-          <div class="dropdown-option" data-value="bsc">
-            <img src="/assets/BNB.png" alt="BNB" class="chain-logo">
-            <span>Binance Smart Chain</span>
-          </div>
+        <div class="dropdown-option" data-value="sepolia">
+          <img src="/assets/ETH.png" alt="ETH" class="chain-logo">
+          <span>Ethereum Sepolia</span>
+        </div>
+        <div class="dropdown-option" data-value="amoy">
+          <img src="/assets/POL.png" alt="POL" class="chain-logo">
+          <span>Polygon Amoy</span>
+        </div>
+        <div class="dropdown-option" data-value="bsc">
+          <img src="/assets/BNB.png" alt="BNB" class="chain-logo">
+          <span>Binance Smart Chain</span>
         </div>
       </div>
     </div>
-    <h1>
-      <img src="/assets/TRX.png" alt="TRX" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
-      Multi-Token Bulk Transfer - TRON Shasta
-    </h1>
-    
-    <div class="wallet-info">
-      <div>
-        <strong>Wallet:</strong> <span id="walletAddress">Loading...</span>
+  </div>
+  <h1>
+    <img src="/assets/TRX.png" alt="TRX" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
+    Multi-Token Bulk Transfer - TRON Shasta
+  </h1>
+
+  <div class="wallet-info">
+    <div>
+      <strong>Wallet:</strong> <span id="walletAddress">Loading...</span>
+    </div>
+    <div class="wallet-balance">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 0.25rem 0; text-align: left;"><strong>TRX Balance:</strong></td>
+          <td style="padding: 0.25rem 5px; text-align: left;"><span id="walletBalance">Loading...</span></td>
+        </tr>
+        <tr>
+          <td style="padding: 0.25rem 0; text-align: left;"><strong>USDT Balance:</strong></td>
+          <td style="padding: 0.25rem 5px; text-align: left;"><span id="usdtBalance"
+              class="wallet-balance">Loading...</span></td>
+        </tr>
+      </table>
+      <button id="refreshBalance" class="refresh-button">↻</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="radio-group">
+      <label>Token Type:</label>
+      <div class="radio-container">
+        <input type="radio" id="tokenTypeTRC20" name="tokenType" value="trc20" checked />
+        <label for="tokenTypeTRC20">TRC-20 Token (USDT)</label>
       </div>
-      <div class="wallet-balance">
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 0.25rem 0; text-align: left;"><strong>TRX Balance:</strong></td>
-            <td style="padding: 0.25rem 5px; text-align: left;"><span id="walletBalance">Loading...</span></td>
-          </tr>
-          <tr>
-            <td style="padding: 0.25rem 0; text-align: left;"><strong>USDT Balance:</strong></td>
-            <td style="padding: 0.25rem 5px; text-align: left;"><span id="usdtBalance" class="wallet-balance">Loading...</span></td>
-          </tr>
-        </table>
-        <button id="refreshBalance" class="refresh-button">↻</button>
+      <div class="radio-container">
+        <input type="radio" id="tokenTypeNative" name="tokenType" value="native" />
+        <label for="tokenTypeNative">Native TRX</label>
       </div>
     </div>
 
-    <div class="card">
-      <div class="radio-group">
-        <label>Token Type:</label>
-        <div class="radio-container">
-          <input
-            type="radio"
-            id="tokenTypeTRC20"
-            name="tokenType"
-            value="trc20"
-            checked
-          />
-          <label for="tokenTypeTRC20">TRC-20 Token (USDT)</label>
-        </div>
-        <div class="radio-container">
-          <input
-            type="radio"
-            id="tokenTypeNative"
-            name="tokenType"
-            value="native"
-          />
-          <label for="tokenTypeNative">Native TRX</label>
-        </div>
-      </div>
-
-      <div class="form-group" id="tokenAddressContainer">
-        <label for="tokenAddress">Token Contract Address:</label>
-        <input
-          type="text"
-          id="tokenAddress"
-          placeholder="Enter TRC-20 token contract address"
-          value="TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="transferData"
-          >Recipient Addresses and Amounts (one per line, format:
-          address,amount):</label
-        >
-        <textarea id="transferData" placeholder="T...address,amount"></textarea>
-      </div>
-
-      <button id="sendButton">Send Tokens</button>
+    <div class="form-group" id="tokenAddressContainer">
+      <label for="tokenAddress">Token Contract Address:</label>
+      <input type="text" id="tokenAddress" placeholder="Enter TRC-20 token contract address"
+        value="TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs" />
     </div>
 
-    <div class="card">
-      <h3>Transaction Status</h3>
-      <div class="status-header">
-        <button id="clearStatus" class="clear-button">Clear Status</button>
-      </div>
-      <div id="status" class="status-container">
-        Ready to transfer. Select token type, enter recipient data, and click
-        Send.
-      </div>
+    <div class="form-group">
+      <label for="transferData">Recipient Addresses and Amounts (one per line, format:
+        address,amount):</label>
+      <textarea id="transferData" placeholder="T...address,amount"></textarea>
     </div>
 
-    <script>
-      // Wait for DOM to be ready
-      document.addEventListener('DOMContentLoaded', function() {
-        // Custom dropdown functionality
-        const dropdown = document.getElementById('chainDropdown');
-        const dropdownSelected = document.getElementById('dropdownSelected');
-        const dropdownOptions = document.getElementById('dropdownOptions');
-        
-        // Check if elements exist
-        if (!dropdown || !dropdownSelected || !dropdownOptions) {
-          console.error('Dropdown elements not found');
-          return;
+    <button id="sendButton">Send Tokens</button>
+  </div>
+
+  <div class="card">
+    <h3>Transaction Status</h3>
+    <div class="status-header">
+      <button id="clearStatus" class="clear-button">Clear Status</button>
+    </div>
+    <div id="status" class="status-container">
+      Ready to transfer. Select token type, enter recipient data, and click
+      Send.
+    </div>
+  </div>
+
+  <script>
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function () {
+      // Custom dropdown functionality
+      const dropdown = document.getElementById('chainDropdown');
+      const dropdownSelected = document.getElementById('dropdownSelected');
+      const dropdownOptions = document.getElementById('dropdownOptions');
+
+      // Check if elements exist
+      if (!dropdown || !dropdownSelected || !dropdownOptions) {
+        console.error('Dropdown elements not found');
+        return;
+      }
+
+      const options = dropdownOptions.querySelectorAll('.dropdown-option');
+      console.log('Found', options.length, 'dropdown options');
+
+      // Toggle dropdown
+      dropdownSelected.addEventListener('click', function (e) {
+        e.stopPropagation();
+        console.log('Dropdown clicked');
+        dropdown.classList.toggle('open');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function (event) {
+        if (!dropdown.contains(event.target)) {
+          dropdown.classList.remove('open');
         }
-        
-        const options = dropdownOptions.querySelectorAll('.dropdown-option');
-        console.log('Found', options.length, 'dropdown options');
+      });
 
-        // Toggle dropdown
-        dropdownSelected.addEventListener('click', function(e) {
+      // Handle option selection
+      options.forEach(option => {
+        option.addEventListener('click', function (e) {
           e.stopPropagation();
-          console.log('Dropdown clicked');
-          dropdown.classList.toggle('open');
-        });
+          const value = this.getAttribute('data-value');
+          console.log('Option clicked:', value);
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-          if (!dropdown.contains(event.target)) {
-            dropdown.classList.remove('open');
-          }
-        });
+          // Update selected display
+          const logo = this.querySelector('.chain-logo').src;
+          const text = this.querySelector('span').textContent;
 
-        // Handle option selection
-        options.forEach(option => {
-          option.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const value = this.getAttribute('data-value');
-            console.log('Option clicked:', value);
-            
-            // Update selected display
-            const logo = this.querySelector('.chain-logo').src;
-            const text = this.querySelector('span').textContent;
-            
-            dropdownSelected.querySelector('.chain-logo').src = logo;
-            dropdownSelected.querySelector('span:not(.dropdown-arrow)').textContent = text;
-            
-            // Update active state
-            options.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Close dropdown
-            dropdown.classList.remove('open');
-            
-            // Navigate to selected chain
-            if (value === 'tron') window.location.href = 'index.html';
-            if (value === 'bsc') window.location.href = 'bsc.html';
-            if (value === 'sepolia') window.location.href = 'eth.html';
-            if (value === 'amoy') window.location.href = 'pol.html';
-          });
+          dropdownSelected.querySelector('.chain-logo').src = logo;
+          dropdownSelected.querySelector('span:not(.dropdown-arrow)').textContent = text;
+
+          // Update active state
+          options.forEach(opt => opt.classList.remove('active'));
+          this.classList.add('active');
+
+          // Close dropdown
+          dropdown.classList.remove('open');
+
+          // Navigate to selected chain
+          if (value === 'tron') window.location.href = 'index.html';
+          if (value === 'bsc') window.location.href = 'bsc.html';
+          if (value === 'sepolia') window.location.href = 'eth.html';
+          if (value === 'amoy') window.location.href = 'pol.html';
         });
       });
+    });
 
-      // Show/hide token address field based on selection
-      document.querySelectorAll('input[name="tokenType"]').forEach((radio) => {
-        radio.addEventListener("change", () => {
-          const tokenType = document.querySelector(
-            'input[name="tokenType"]:checked'
-          ).value;
-          const tokenAddressContainer = document.getElementById(
-            "tokenAddressContainer"
-          );
-          tokenAddressContainer.style.display =
-            tokenType === "trc20" ? "block" : "none";
-        });
-      });
-      
-      // Fetch wallet balance
-      async function fetchWalletBalance() {
-        try {
-          const endpoint = "/api/transfer";
-          // const endpoint = "http://localhost:4100/api/transfer";
-          const response = await fetch(endpoint);
-          const data = await response.json();
-          
-          const balanceElement = document.getElementById("walletBalance");
-          const balance = parseFloat(data.balance).toFixed(4);
-          balanceElement.textContent = `${balance} TRX`;
-          
-          // Update USDT balance
-          const usdtBalanceElement = document.getElementById("usdtBalance");
-          const usdtBalance = parseFloat(data.usdtBalance || 0).toFixed(2);
-          usdtBalanceElement.textContent = `${usdtBalance} USDT`;
-          
-          // Update wallet address
-          document.getElementById("walletAddress").textContent = data.address;
-          
-          // Add low balance warning if below 10 TRX
-          if (parseFloat(data.balance) < 10) {
-            balanceElement.classList.add("low-balance");
-            updateStatus("⚠️ Wallet balance is low. Please top up the wallet.", "error");
-          } else {
-            balanceElement.classList.remove("low-balance");
-          }
-        } catch (error) {
-          console.error("Error fetching wallet balance:", error);
-          document.getElementById("walletBalance").textContent = "Error";
-          document.getElementById("usdtBalance").textContent = "Error";
-        }
-      }
-
-      // Refresh balance button
-      document.getElementById("refreshBalance").addEventListener("click", fetchWalletBalance);
-
-      // Initial balance fetch
-      fetchWalletBalance();
-
-      document
-        .getElementById("sendButton")
-        .addEventListener("click", async () => {
-          const tokenType = document.querySelector(
-            'input[name="tokenType"]:checked'
-          ).value;
-          const transferDataRaw = document
-            .getElementById("transferData")
-            .value.trim();
-
-          if (!transferDataRaw) {
-            updateStatus(
-              "❌ Please enter at least one recipient and amount.",
-              "error"
-            );
-            return;
-          }
-
-          const transferLines = transferDataRaw.split("\n");
-          const recipients = [];
-          const amounts = [];
-
-          for (let line of transferLines) {
-            const [address, amount] = line
-              .split(",")
-              .map((item) => item.trim());
-
-            if (!address || isNaN(amount)) {
-              updateStatus(`❌ Invalid input line: ${line}`, "error");
-              return;
-            }
-
-            recipients.push(address);
-            amounts.push(parseFloat(amount));
-          }
-
-          if (recipients.length === 0) {
-            updateStatus("❌ No valid recipients found.", "error");
-            return;
-          }
-
-          // Build request body
-          let payload = {
-            recipients,
-            amounts,
-          };
-
-          if (tokenType === "trc20") {
-            const tokenAddress = document
-              .getElementById("tokenAddress")
-              .value.trim();
-            if (!tokenAddress) {
-              updateStatus(
-                "❌ Please enter a valid token contract address.",
-                "error"
-              );
-              return;
-            }
-
-            payload.tokenAddress = tokenAddress;
-          }
-
-          // For Vercel, use a single endpoint and add a 'type' field
-          const endpoint = "/api/transfer";
-          // const endpoint = "http://localhost:4100/api/transfer";
-          payload.type = tokenType;
-
-          try {
-            updateStatus("🚀 Sending transactions... Please wait.");
-
-            const response = await fetch(endpoint, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(payload),
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-              updateStatus(`❌ Server error: ${result.error}`, "error");
-              return;
-            }
-
-            const results = result.results;
-
-            if (!results || results.length === 0) {
-              updateStatus("❌ No transaction results received.", "error");
-              return;
-            }
-
-            results.forEach((tx) => {
-              if (tx.success) {
-                updateStatus(
-                  `✅ Sent ${tx.amount} to ${tx.recipient}. <a href="${tx.explorerLink}" target="_blank">View TX</a>`,
-                  "success"
-                );
-              } else {
-                updateStatus(
-                  `❌ Failed to send ${tx.amount} to ${tx.recipient}: ${tx.error}`,
-                  "error"
-                );
-              }
-            });
-            
-            // Refresh balance after transactions
-            setTimeout(fetchWalletBalance, 2000);
-          } catch (error) {
-            updateStatus(`❌ Network error: ${error.message}`, "error");
-          }
-        });
-
-      document.getElementById("clearStatus").addEventListener("click", () => {
-        const statusContainer = document.getElementById("status");
-        statusContainer.innerHTML =
-          "Ready to transfer. Select token type, enter recipient data, and click Send.";
-      });
-
-      function updateStatus(message, type) {
-        const statusContainer = document.getElementById("status");
-        const messageElement = document.createElement("div");
-        messageElement.innerHTML = message;
-
-        // Add timestamp
-        const now = new Date();
-        const timestamp = now.toLocaleTimeString();
-
-        // Create message with timestamp
-        messageElement.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
-
-        if (type === "success") {
-          messageElement.classList.add("transaction-success");
-        } else if (type === "error") {
-          messageElement.classList.add("transaction-failure");
-        }
-
-        // Append at the bottom (default behavior)
-        statusContainer.appendChild(messageElement);
-        statusContainer.scrollTop = statusContainer.scrollHeight;
-      }
-
-      // Initialize token address field visibility
-      (function init() {
+    // Show/hide token address field based on selection
+    document.querySelectorAll('input[name="tokenType"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
         const tokenType = document.querySelector(
           'input[name="tokenType"]:checked'
         ).value;
@@ -732,7 +526,203 @@ h1 img {
         );
         tokenAddressContainer.style.display =
           tokenType === "trc20" ? "block" : "none";
-      })();
-    </script>
-  </body>
+      });
+    });
+
+    // Fetch wallet balance
+    async function fetchWalletBalance() {
+      try {
+        const endpoint = "/api/transfer";
+        // const endpoint = "http://localhost:4100/api/transfer";
+        const response = await fetch(endpoint);
+        const data = await response.json();
+
+        const balanceElement = document.getElementById("walletBalance");
+        const balance = parseFloat(data.balance).toFixed(4);
+        balanceElement.textContent = `${balance} TRX`;
+
+        // Update USDT balance
+        const usdtBalanceElement = document.getElementById("usdtBalance");
+        const usdtBalance = parseFloat(data.usdtBalance || 0).toFixed(2);
+        usdtBalanceElement.textContent = `${usdtBalance} USDT`;
+
+        // Update wallet address
+        document.getElementById("walletAddress").textContent = data.address;
+
+        // Add low balance warning if below 10 TRX
+        if (parseFloat(data.balance) < 10) {
+          balanceElement.classList.add("low-balance");
+          updateStatus("⚠️ Wallet balance is low. Please top up the wallet.", "error");
+        } else {
+          balanceElement.classList.remove("low-balance");
+        }
+      } catch (error) {
+        console.error("Error fetching wallet balance:", error);
+        document.getElementById("walletBalance").textContent = "Error";
+        document.getElementById("usdtBalance").textContent = "Error";
+      }
+    }
+
+    // Refresh balance button
+    document.getElementById("refreshBalance").addEventListener("click", fetchWalletBalance);
+
+    // Initial balance fetch
+    fetchWalletBalance();
+
+    document
+      .getElementById("sendButton")
+      .addEventListener("click", async () => {
+        const tokenType = document.querySelector(
+          'input[name="tokenType"]:checked'
+        ).value;
+        const transferDataRaw = document
+          .getElementById("transferData")
+          .value.trim();
+
+        if (!transferDataRaw) {
+          updateStatus(
+            "❌ Please enter at least one recipient and amount.",
+            "error"
+          );
+          return;
+        }
+
+        const transferLines = transferDataRaw.split("\n");
+        const recipients = [];
+        const amounts = [];
+
+        for (let line of transferLines) {
+          const [address, amount] = line
+            .split(",")
+            .map((item) => item.trim());
+
+          if (!address || isNaN(amount)) {
+            updateStatus(`❌ Invalid input line: ${line}`, "error");
+            return;
+          }
+
+          recipients.push(address);
+          amounts.push(parseFloat(amount));
+        }
+
+        if (recipients.length === 0) {
+          updateStatus("❌ No valid recipients found.", "error");
+          return;
+        }
+
+        // Build request body
+        let payload = {
+          recipients,
+          amounts,
+        };
+
+        if (tokenType === "trc20") {
+          const tokenAddress = document
+            .getElementById("tokenAddress")
+            .value.trim();
+          if (!tokenAddress) {
+            updateStatus(
+              "❌ Please enter a valid token contract address.",
+              "error"
+            );
+            return;
+          }
+
+          payload.tokenAddress = tokenAddress;
+        }
+
+        // For Vercel, use a single endpoint and add a 'type' field
+        const endpoint = "/api/transfer";
+        // const endpoint = "http://localhost:4100/api/transfer";
+        payload.type = tokenType;
+
+        try {
+          updateStatus("🚀 Sending transactions... Please wait.");
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            updateStatus(`❌ Server error: ${result.error}`, "error");
+            return;
+          }
+
+          const results = result.results;
+
+          if (!results || results.length === 0) {
+            updateStatus("❌ No transaction results received.", "error");
+            return;
+          }
+
+          results.forEach((tx) => {
+            if (tx.success) {
+              updateStatus(
+                `✅ Sent ${tx.amount} to ${tx.recipient}. <a href="${tx.explorerLink}" target="_blank">View TX</a>`,
+                "success"
+              );
+            } else {
+              updateStatus(
+                `❌ Failed to send ${tx.amount} to ${tx.recipient}: ${tx.error}`,
+                "error"
+              );
+            }
+          });
+
+          // Refresh balance after transactions
+          setTimeout(fetchWalletBalance, 2000);
+        } catch (error) {
+          updateStatus(`❌ Network error: ${error.message}`, "error");
+        }
+      });
+
+    document.getElementById("clearStatus").addEventListener("click", () => {
+      const statusContainer = document.getElementById("status");
+      statusContainer.innerHTML =
+        "Ready to transfer. Select token type, enter recipient data, and click Send.";
+    });
+
+    function updateStatus(message, type) {
+      const statusContainer = document.getElementById("status");
+      const messageElement = document.createElement("div");
+      messageElement.innerHTML = message;
+
+      // Add timestamp
+      const now = new Date();
+      const timestamp = now.toLocaleTimeString();
+
+      // Create message with timestamp
+      messageElement.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+
+      if (type === "success") {
+        messageElement.classList.add("transaction-success");
+      } else if (type === "error") {
+        messageElement.classList.add("transaction-failure");
+      }
+
+      // Append at the bottom (default behavior)
+      statusContainer.appendChild(messageElement);
+      statusContainer.scrollTop = statusContainer.scrollHeight;
+    }
+
+    // Initialize token address field visibility
+    (function init() {
+      const tokenType = document.querySelector(
+        'input[name="tokenType"]:checked'
+      ).value;
+      const tokenAddressContainer = document.getElementById(
+        "tokenAddressContainer"
+      );
+      tokenAddressContainer.style.display =
+        tokenType === "trc20" ? "block" : "none";
+    })();
+  </script>
+</body>
+
 </html>
