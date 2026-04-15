@@ -362,6 +362,15 @@
 </head>
 
 <body>
+  <script>
+    (function () {
+      fetch('/api/check-auth', { credentials: 'include' })
+        .then(function (r) {
+          if (r.status === 401) window.location.href = '/login.html';
+        })
+        .catch(function () { window.location.href = '/login.html'; });
+    })();
+  </script>
   <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem;">
     <label for="chainSelect" style="margin-right: 0.5rem; font-weight: 600;">Chain:</label>
     <div class="custom-dropdown" id="chainDropdown">
@@ -563,7 +572,7 @@
       try {
         const endpoint = "/api/eth-transfer";
         // const endpoint = "http://localhost:4100/api/eth-transfer";
-        const response = await fetch(endpoint);
+        const response = await fetch(endpoint, { credentials: 'include' });
         const data = await response.json();
 
         const balanceElement = document.getElementById("walletBalance");
@@ -686,6 +695,7 @@
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify(payload),
           });
 
