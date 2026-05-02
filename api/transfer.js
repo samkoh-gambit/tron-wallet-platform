@@ -1,5 +1,6 @@
 import { TronWeb } from 'tronweb';
 import dotenv from 'dotenv';
+import { requireAuth } from './auth.js';
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ async function getUSDTBalance() {
 }
 
 export default async function handler(req, res) {
+  if (!requireAuth(req, res)) return;
+
   if (req.method === 'GET') {
     try {
       const balance = await getBalance();
