@@ -62,12 +62,42 @@
     }
 
     input[type="text"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="text"].password-visible {
       width: 100%;
       padding: 0.75rem;
       border-radius: 0.25rem;
       border: 1px solid var(--border-color);
       font-size: 1rem;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper input {
+      padding-right: 2.5rem;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #6c757d;
+      width: auto;
+      margin-top: 0;
+      padding: 0.25rem;
+      line-height: 1;
+    }
+
+    .toggle-password:hover {
+      color: var(--primary-color);
+      background: transparent;
     }
 
     input:focus {
@@ -116,7 +146,11 @@
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" required autocomplete="current-password" />
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" required autocomplete="current-password" />
+          <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password"
+            title="Show password">&#128065;</button>
+        </div>
       </div>
       <div id="error" class="error" style="display: none;"></div>
       <button type="submit" id="submitBtn">Enter</button>
@@ -164,6 +198,16 @@
           .finally(function () {
             btn.disabled = false;
           });
+      });
+
+      var toggleBtn = document.getElementById('togglePassword');
+      var pwdEl = document.getElementById('password');
+      toggleBtn.addEventListener('click', function () {
+        var isHidden = pwdEl.type === 'password';
+        pwdEl.type = isHidden ? 'text' : 'password';
+        pwdEl.classList.toggle('password-visible', isHidden);
+        toggleBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+        toggleBtn.setAttribute('title', isHidden ? 'Hide password' : 'Show password');
       });
     })();
   </script>
