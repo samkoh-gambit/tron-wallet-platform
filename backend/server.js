@@ -6,7 +6,9 @@ import { dirname, join } from 'path';
 import ethTransferHandler from './eth-transfer.js';
 import polTransferHandler from './pol-transfer.js';
 import bscTransferHandler from './bsc-transfer.js';
+import solTransferHandler from './sol-transfer.js';
 import tronTransferHandler from './transfer.js';
+import { getChainsPayload, isChainEnabled } from '../api/chain-config.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
@@ -66,15 +68,30 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
+function requireChain(chainId) {
+  return (req, res, next) => {
+    if (!isChainEnabled(chainId)) {
+      return res.status(403).json({ error: `Chain '${chainId}' is disabled` });
+    }
+    next();
+  };
+}
+
+app.get('/api/chains', requireAuth, (req, res) => {
+  res.json(getChainsPayload());
+});
+
 // Protected API routes
-app.post('/api/eth-transfer', requireAuth, ethTransferHandler);
-app.post('/api/pol-transfer', requireAuth, polTransferHandler);
-app.post('/api/bsc-transfer', requireAuth, bscTransferHandler);
-app.post('/api/transfer', requireAuth, tronTransferHandler);
-app.get('/api/pol-transfer', requireAuth, polTransferHandler);
-app.get('/api/eth-transfer', requireAuth, ethTransferHandler);
-app.get('/api/bsc-transfer', requireAuth, bscTransferHandler);
-app.get('/api/transfer', requireAuth, tronTransferHandler);
+app.post('/api/eth-transfer', requireAuth, requireChain('sepolia'), ethTransferHandler);
+app.post('/api/pol-transfer', requireAuth, requireChain('amoy'), polTransferHandler);
+app.post('/api/bsc-transfer', requireAuth, requireChain('bsc'), bscTransferHandler);
+app.post('/api/sol-transfer', requireAuth, requireChain('solana'), solTransferHandler);
+app.post('/api/transfer', requireAuth, requireChain('tron'), tronTransferHandler);
+app.get('/api/pol-transfer', requireAuth, requireChain('amoy'), polTransferHandler);
+app.get('/api/eth-transfer', requireAuth, requireChain('sepolia'), ethTransferHandler);
+app.get('/api/bsc-transfer', requireAuth, requireChain('bsc'), bscTransferHandler);
+app.get('/api/sol-transfer', requireAuth, requireChain('solana'), solTransferHandler);
+app.get('/api/transfer', requireAuth, requireChain('tron'), tronTransferHandler);
 
 // Serve static app (login + pages)
 app.use(express.static(join(__dirname, '../public')));
