@@ -361,7 +361,7 @@
   </style>
 </head>
 
-<body>
+<body data-chain="amoy">
   <script>
     (function () {
       fetch('/api/check-auth', { credentials: 'include' })
@@ -395,6 +395,10 @@
         <div class="dropdown-option active" data-value="amoy">
           <img src="/assets/POL.png" alt="POL" class="chain-logo">
           <span>Polygon Amoy</span>
+        </div>
+        <div class="dropdown-option" data-value="solana">
+          <img src="/assets/SOL.svg" alt="SOL" class="chain-logo">
+          <span>Solana Devnet</span>
         </div>
       </div>
     </div>
@@ -522,6 +526,7 @@
           if (value === 'bsc') window.location.href = 'bsc.html';
           if (value === 'sepolia') window.location.href = 'eth.html';
           if (value === 'amoy') window.location.href = 'pol.html';
+          if (value === 'solana') window.location.href = 'sol.html';
         });
       });
     });
@@ -735,6 +740,7 @@
         tokenType === "erc20" ? "block" : "none";
     })();
   </script>
+  <script src="/js/chain-filter.js"></script>
 </body>
 
 </html>
