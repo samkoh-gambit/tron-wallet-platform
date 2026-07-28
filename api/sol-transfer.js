@@ -1,23 +1,51 @@
-import {
-  Connection,
-  Keypair,
-  PublicKey,
-  SystemProgram,
-  Transaction,
-  sendAndConfirmTransaction,
-  LAMPORTS_PER_SOL,
-} from '@solana/web3.js';
-import {
-  createTransferInstruction,
-  getAssociatedTokenAddress,
-  getOrCreateAssociatedTokenAccount,
-  getMint,
-  getAccount,
-} from '@solana/spl-token';
-import bs58 from 'bs58';
+import { createRequire } from 'module';
 import dotenv from 'dotenv';
 import { requireAuth } from './auth.js';
 import { assertChainEnabled } from './chain-config.js';
+
+// Load Solana packages via CJS to avoid Vercel ESM crash:
+// ERR_UNSUPPORTED_DIR_IMPORT for jayson/lib/client/browser
+const require = createRequire(import.meta.url);
+
+let Connection;
+let Keypair;
+let PublicKey;
+let SystemProgram;
+let Transaction;
+let sendAndConfirmTransaction;
+let LAMPORTS_PER_SOL;
+let createTransferInstruction;
+let getAssociatedTokenAddress;
+let getOrCreateAssociatedTokenAccount;
+let getMint;
+let getAccount;
+let bs58;
+let moduleLoadError = null;
+
+try {
+  ({
+    Connection,
+    Keypair,
+    PublicKey,
+    SystemProgram,
+    Transaction,
+    sendAndConfirmTransaction,
+    LAMPORTS_PER_SOL,
+  } = require('@solana/web3.js'));
+
+  ({
+    createTransferInstruction,
+    getAssociatedTokenAddress,
+    getOrCreateAssociatedTokenAccount,
+    getMint,
+    getAccount,
+  } = require('@solana/spl-token'));
+
+  const bs58Module = require('bs58');
+  bs58 = bs58Module.default || bs58Module;
+} catch (error) {
+  moduleLoadError = error;
+}
 
 dotenv.config();
 
@@ -73,6 +101,14 @@ async function getSplBalance(connection, owner, mintAddress) {
 }
 
 export default async function handler(req, res) {
+  if (moduleLoadError) {
+    res.status(500).json({
+      error: 'Solana module failed to load',
+      detail: moduleLoadError.message,
+    });
+    return;
+  }
+
   if (!requireAuth(req, res)) return;
   if (!assertChainEnabled('solana', res)) return;
 
@@ -113,7 +149,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { recipients, amounts, tokenAddress, type } = req.body;
+  const { recipients, amounts, tokenAddress, type } = req.body || {};
 
   if (!recipients || !amounts || recipients.length !== amounts.length) {
     res.status(400).json({ error: 'Invalid recipient/amount data' });
