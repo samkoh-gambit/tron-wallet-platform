@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import dotenv from 'dotenv';
 import { requireAuth } from './auth.js';
+import { assertChainEnabled } from './chain-config.js';
 
 dotenv.config();
 
@@ -59,6 +60,7 @@ async function getIMYRTokenBalance() {
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return;
+  if (!assertChainEnabled('sepolia', res)) return;
 
   console.log('[ETH] Incoming request:', req.method, req.url, req.body);
 

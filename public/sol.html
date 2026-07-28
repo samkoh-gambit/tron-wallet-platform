@@ -4,23 +4,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Token Bulk Transfer - TRON Shasta</title>
+  <title>Multi-Token Bulk Transfer - Solana Devnet</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" href="/favicon.svg" />
   <style>
     :root {
-      --primary-color: #ff5722;
-      --primary-hover: #e64a19;
-      --success-color: #28a745;
+      --solana-purple: #9945FF;
+      --solana-green: #14F195;
+      --solana-blue: #00D1FF;
+      --primary-color: #9945FF;
+      --primary-hover: #7B2FDB;
+      --accent-green: #14F195;
+      --accent-blue: #00D1FF;
+      --solana-gradient: linear-gradient(135deg, #9945FF 0%, #14F195 55%, #00D1FF 100%);
+      --solana-gradient-soft: linear-gradient(135deg, rgba(153, 69, 255, 0.12) 0%, rgba(20, 241, 149, 0.12) 55%, rgba(0, 209, 255, 0.12) 100%);
+      --success-color: #14F195;
       --danger-color: #dc3545;
       --warning-bg: #fff3cd;
       --warning-border: #ffeeba;
       --warning-text: #856404;
-      --light-gray: #f8f9fa;
-      --border-color: #dee2e6;
-      --text-color: #212529;
-      --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      --light-gray: #f7f5ff;
+      --border-color: #e0d6f5;
+      --text-color: #1a1228;
+      --box-shadow: 0 0.125rem 0.35rem rgba(153, 69, 255, 0.12);
     }
 
     * {
@@ -32,7 +39,10 @@
         "Helvetica Neue", Arial, sans-serif;
       line-height: 1.5;
       color: var(--text-color);
-      background-color: #fff;
+      background:
+        radial-gradient(ellipse at top left, rgba(153, 69, 255, 0.08), transparent 45%),
+        radial-gradient(ellipse at bottom right, rgba(20, 241, 149, 0.08), transparent 45%),
+        #fff;
       max-width: 960px;
       margin: 0 auto;
       padding: 20px;
@@ -41,9 +51,19 @@
     h1 {
       font-weight: 600;
       margin-bottom: 1.5rem;
-      color: var(--primary-color);
+      color: var(--solana-purple);
       border-bottom: 2px solid var(--border-color);
       padding-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 .title-text {
+      background: var(--solana-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     .card {
@@ -71,15 +91,15 @@
       padding: 0.75rem;
       border-radius: 0.25rem;
       border: 1px solid var(--border-color);
-      transition: border-color 0.15s ease-in-out;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
       font-size: 1rem;
     }
 
     input[type="text"]:focus,
     textarea:focus {
-      border-color: var(--primary-color);
+      border-color: var(--solana-purple);
       outline: 0;
-      box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.25);
+      box-shadow: 0 0 0 0.2rem rgba(153, 69, 255, 0.2);
     }
 
     textarea {
@@ -88,7 +108,8 @@
     }
 
     button {
-      background-color: var(--primary-color);
+      background: var(--solana-gradient);
+      background-size: 160% 160%;
       color: white;
       border: none;
       cursor: pointer;
@@ -97,12 +118,13 @@
       font-size: 1rem;
       font-weight: 600;
       width: 100%;
-      transition: background-color 0.15s ease-in-out;
+      transition: filter 0.15s ease-in-out, transform 0.15s ease-in-out;
       margin-top: 1rem;
     }
 
     button:hover {
-      background-color: var(--primary-hover);
+      filter: brightness(1.05);
+      transform: translateY(-1px);
     }
 
     .status-container {
@@ -117,7 +139,8 @@
     .radio-group {
       margin-bottom: 1rem;
       padding: 0.75rem;
-      background-color: var(--light-gray);
+      background: var(--solana-gradient-soft);
+      border: 1px solid var(--border-color);
       border-radius: 0.25rem;
     }
 
@@ -130,10 +153,11 @@
     .radio-container input {
       width: auto;
       margin-right: 0.5rem;
+      accent-color: var(--solana-purple);
     }
 
     .transaction-success {
-      color: var(--success-color);
+      color: #0a9a5c;
       margin-bottom: 0.25rem;
     }
 
@@ -143,11 +167,12 @@
     }
 
     .transaction-link a {
-      color: var(--primary-color);
+      color: var(--solana-purple);
       text-decoration: none;
     }
 
     .transaction-link a:hover {
+      color: var(--solana-green);
       text-decoration: underline;
     }
 
@@ -158,7 +183,7 @@
     }
 
     .clear-button {
-      background-color: #6c757d;
+      background: linear-gradient(135deg, #6c757d, #5a6268);
       color: white;
       padding: 0.375rem 0.75rem;
       border: none;
@@ -170,7 +195,8 @@
     }
 
     .clear-button:hover {
-      background-color: #5a6268;
+      filter: brightness(1.08);
+      transform: none;
     }
 
     .timestamp {
@@ -190,9 +216,7 @@
       display: flex;
       flex-direction: column;
       max-height: 400px;
-      /* Add max height */
       overflow-y: auto;
-      /* Enable scrolling */
     }
 
     .status-container>div {
@@ -210,7 +234,7 @@
       border-radius: 0.25rem;
       border: 1px solid var(--border-color);
       font-size: 1rem;
-      background: #fff url('data:image/svg+xml;utf8,<svg fill="%23ff5722" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 9.293a1 1 0 011.414 0L10 10.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 0.75rem center/1rem 1rem;
+      background: #fff;
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -218,9 +242,9 @@
     }
 
     .chain-select:focus {
-      border-color: var(--primary-color);
+      border-color: var(--solana-purple);
       outline: none;
-      box-shadow: 0 0 0 0.2rem rgba(255, 87, 34, 0.15);
+      box-shadow: 0 0 0 0.2rem rgba(153, 69, 255, 0.15);
     }
 
     .wallet-info {
@@ -228,9 +252,10 @@
       align-items: center;
       margin-bottom: 1rem;
       padding: 0.75rem;
-      background-color: var(--light-gray);
+      background: var(--solana-gradient-soft);
       border-radius: 0.25rem;
       border: 1px solid var(--border-color);
+      border-left: 3px solid var(--solana-purple);
     }
 
     .wallet-balance {
@@ -239,7 +264,7 @@
     }
 
     .refresh-button {
-      background-color: var(--primary-color);
+      background: var(--solana-gradient);
       color: white;
       padding: 0.25rem 0.5rem;
       border: none;
@@ -248,10 +273,12 @@
       font-size: 0.875rem;
       margin-left: 0.5rem;
       width: auto;
+      margin-top: 0;
     }
 
     .refresh-button:hover {
-      background-color: var(--primary-hover);
+      filter: brightness(1.05);
+      transform: none;
     }
 
     .low-balance {
@@ -263,13 +290,11 @@
       font-weight: 600;
     }
 
-    /* Chain image styling */
     h1 img {
       border-radius: 4px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 6px rgba(153, 69, 255, 0.25);
     }
 
-    /* Custom dropdown styling */
     .custom-dropdown {
       position: relative;
       display: inline-block;
@@ -284,11 +309,12 @@
       border: 1px solid var(--border-color);
       background: #fff;
       cursor: pointer;
-      transition: border-color 0.15s ease-in-out;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
 
     .dropdown-selected:hover {
-      border-color: var(--primary-color);
+      border-color: var(--solana-purple);
+      box-shadow: 0 0 0 0.15rem rgba(20, 241, 149, 0.15);
     }
 
     .dropdown-selected .chain-logo {
@@ -305,7 +331,7 @@
 
     .dropdown-arrow {
       font-size: 0.8rem;
-      color: #666;
+      color: var(--solana-purple);
       transition: transform 0.2s ease;
     }
 
@@ -336,7 +362,7 @@
     }
 
     .dropdown-option.active {
-      background-color: var(--primary-color);
+      background: var(--solana-gradient);
       color: white;
     }
 
@@ -361,7 +387,7 @@
   </style>
 </head>
 
-<body data-chain="tron">
+<body data-chain="solana">
   <script>
     (function () {
       fetch('/api/check-auth', { credentials: 'include' })
@@ -375,14 +401,18 @@
     <label for="chainSelect" style="margin-right: 0.5rem; font-weight: 600;">Chain:</label>
     <div class="custom-dropdown" id="chainDropdown">
       <div class="dropdown-selected" id="dropdownSelected">
-        <img src="/assets/TRX.png" alt="TRX" class="chain-logo">
-        <span>TRON (Shasta)</span>
+        <img src="/assets/SOL.svg" alt="SOL" class="chain-logo">
+        <span>Solana Devnet</span>
         <span class="dropdown-arrow">▼</span>
       </div>
       <div class="dropdown-options" id="dropdownOptions">
-        <div class="dropdown-option active" data-value="tron">
+        <div class="dropdown-option" data-value="tron">
           <img src="/assets/TRX.png" alt="TRX" class="chain-logo">
           <span>TRON (Shasta)</span>
+        </div>
+        <div class="dropdown-option" data-value="bsc">
+          <img src="/assets/BNB.png" alt="BNB" class="chain-logo">
+          <span>Binance Smart Chain</span>
         </div>
         <div class="dropdown-option" data-value="sepolia">
           <img src="/assets/ETH.png" alt="ETH" class="chain-logo">
@@ -392,11 +422,7 @@
           <img src="/assets/POL.png" alt="POL" class="chain-logo">
           <span>Polygon Amoy</span>
         </div>
-        <div class="dropdown-option" data-value="bsc">
-          <img src="/assets/BNB.png" alt="BNB" class="chain-logo">
-          <span>Binance Smart Chain</span>
-        </div>
-        <div class="dropdown-option" data-value="solana">
+        <div class="dropdown-option active" data-value="solana">
           <img src="/assets/SOL.svg" alt="SOL" class="chain-logo">
           <span>Solana Devnet</span>
         </div>
@@ -404,8 +430,8 @@
     </div>
   </div>
   <h1>
-    <img src="/assets/TRX.png" alt="TRX" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
-    Multi-Token Bulk Transfer - TRON Shasta
+    <img src="/assets/SOL.svg" alt="SOL" style="width: 24px; height: 24px; vertical-align: middle;">
+    <span class="title-text">Multi-Token Bulk Transfer - Solana Devnet</span>
   </h1>
 
   <div class="wallet-info">
@@ -415,11 +441,11 @@
     <div class="wallet-balance">
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td style="padding: 0.25rem 0; text-align: left;"><strong>TRX Balance:</strong></td>
+          <td style="padding: 0.25rem 0; text-align: left;"><strong>SOL Balance:</strong></td>
           <td style="padding: 0.25rem 5px; text-align: left;"><span id="walletBalance">Loading...</span></td>
         </tr>
         <tr>
-          <td style="padding: 0.25rem 0; text-align: left;"><strong>USDT Balance:</strong></td>
+          <td style="padding: 0.25rem 0; text-align: left;"><strong>USDC Balance:</strong></td>
           <td style="padding: 0.25rem 5px; text-align: left;"><span id="usdtBalance"
               class="wallet-balance">Loading...</span></td>
         </tr>
@@ -432,26 +458,27 @@
     <div class="radio-group">
       <label>Token Type:</label>
       <div class="radio-container">
-        <input type="radio" id="tokenTypeTRC20" name="tokenType" value="trc20" checked />
-        <label for="tokenTypeTRC20">TRC-20 Token (USDT)</label>
+        <input type="radio" id="tokenTypeSPL" name="tokenType" value="spl" checked />
+        <label for="tokenTypeSPL">USDC (SPL)</label>
       </div>
       <div class="radio-container">
         <input type="radio" id="tokenTypeNative" name="tokenType" value="native" />
-        <label for="tokenTypeNative">Native TRX</label>
+        <label for="tokenTypeNative">Native SOL</label>
       </div>
     </div>
 
     <div class="form-group" id="tokenAddressContainer">
-      <label for="tokenAddress">Token Contract Address:</label>
-      <input type="text" id="tokenAddress" placeholder="Enter TRC-20 token contract address"
-        value="TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs" readonly
+      <label for="tokenAddress">USDC Mint Address:</label>
+      <input type="text" id="tokenAddress"
+        placeholder="Circle USDC mint on Solana Devnet"
+        value="4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU" readonly
         style="background-color: #e9ecef; cursor: not-allowed;" />
     </div>
 
     <div class="form-group">
       <label for="transferData">Recipient Addresses and Amounts (one per line, format:
         address,amount):</label>
-      <textarea id="transferData" placeholder="T...address,amount"></textarea>
+      <textarea id="transferData" placeholder="SolanaAddress,amount"></textarea>
     </div>
 
     <button id="sendButton">Send Tokens</button>
@@ -540,32 +567,39 @@
           "tokenAddressContainer"
         );
         tokenAddressContainer.style.display =
-          tokenType === "trc20" ? "block" : "none";
+          tokenType === "spl" ? "block" : "none";
       });
     });
 
     // Fetch wallet balance
     async function fetchWalletBalance() {
       try {
-        const endpoint = "/api/transfer";
-        // const endpoint = "http://localhost:4100/api/transfer";
+        const endpoint = "/api/sol-transfer";
+        // const endpoint = "http://localhost:4100/api/sol-transfer";
         const response = await fetch(endpoint, { credentials: 'include' });
         const data = await response.json();
 
         const balanceElement = document.getElementById("walletBalance");
         const balance = parseFloat(data.balance).toFixed(4);
-        balanceElement.textContent = `${balance} TRX`;
+        balanceElement.textContent = `${balance} SOL`;
 
-        // Update USDT balance
+        // Update OKK balance
         const usdtBalanceElement = document.getElementById("usdtBalance");
-        const usdtBalance = parseFloat(data.usdtBalance || 0).toFixed(2);
-        usdtBalanceElement.textContent = `${usdtBalance} USDT`;
+        const usdtBalance = parseFloat(data.tokenBalance || 0).toFixed(2);
+        usdtBalanceElement.textContent = `${usdtBalance} USDC`;
 
         // Update wallet address
         document.getElementById("walletAddress").textContent = data.address;
 
-        // Add low balance warning if below 10 TRX
-        if (parseFloat(data.balance) < 10) {
+        if (data.tokenMint) {
+          const mintInput = document.getElementById("tokenAddress");
+          if (mintInput && !mintInput.value) {
+            mintInput.value = data.tokenMint;
+          }
+        }
+
+        // Add low balance warning if below 0.01 SOL
+        if (parseFloat(data.balance) < 0.01) {
           balanceElement.classList.add("low-balance");
           updateStatus("⚠️ Wallet balance is low. Please top up the wallet.", "error");
         } else {
@@ -631,7 +665,7 @@
           amounts,
         };
 
-        if (tokenType === "trc20") {
+        if (tokenType === "spl") {
           const tokenAddress = document
             .getElementById("tokenAddress")
             .value.trim();
@@ -647,8 +681,8 @@
         }
 
         // For Vercel, use a single endpoint and add a 'type' field
-        const endpoint = "/api/transfer";
-        // const endpoint = "http://localhost:4100/api/transfer";
+        const endpoint = "/api/sol-transfer";
+        // const endpoint = "http://localhost:4100/api/sol-transfer";
         payload.type = tokenType;
 
         try {
@@ -736,7 +770,10 @@
         "tokenAddressContainer"
       );
       tokenAddressContainer.style.display =
-        tokenType === "trc20" ? "block" : "none";
+        tokenType === "spl" ? "block" : "none";
+      if (tokenType !== "spl") {
+        tokenAddressContainer.style.display = "none";
+      }
     })();
   </script>
   <script src="/js/chain-filter.js"></script>

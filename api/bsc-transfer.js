@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import dotenv from 'dotenv';
 import { requireAuth } from './auth.js';
+import { assertChainEnabled } from './chain-config.js';
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ async function getUSDTBalance() {
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return;
+  if (!assertChainEnabled('bsc', res)) return;
 
   if (req.method === 'GET') {
     try {
