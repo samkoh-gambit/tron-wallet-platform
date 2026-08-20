@@ -645,8 +645,14 @@
             .split(",")
             .map((item) => item.trim());
 
-          if (!address || isNaN(amount)) {
+          if (!address || isNaN(amount) || parseFloat(amount) <= 0) {
             updateStatus(`❌ Invalid input line: ${line}`, "error");
+            return;
+          }
+
+          // Basic Solana address check (base58, typical length)
+          if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+            updateStatus(`❌ Invalid Solana address: ${address}`, "error");
             return;
           }
 

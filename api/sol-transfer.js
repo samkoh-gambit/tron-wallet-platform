@@ -14,9 +14,10 @@ let SystemProgram;
 let Transaction;
 let sendAndConfirmTransaction;
 let LAMPORTS_PER_SOL;
+let createAssociatedTokenAccountIdempotentInstruction;
 let createTransferInstruction;
 let getAssociatedTokenAddress;
-let getOrCreateAssociatedTokenAccount;
+let getAssociatedTokenAddressSync;
 let getMint;
 let getAccount;
 let bs58;
@@ -34,9 +35,10 @@ try {
   } = require('@solana/web3.js'));
 
   ({
+    createAssociatedTokenAccountIdempotentInstruction,
     createTransferInstruction,
     getAssociatedTokenAddress,
-    getOrCreateAssociatedTokenAccount,
+    getAssociatedTokenAddressSync,
     getMint,
     getAccount,
   } = require('@solana/spl-token'));
@@ -50,7 +52,7 @@ try {
 dotenv.config();
 
 const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
-const EXPLORER_BASE = 'https://explorer.solana.com/tx';
+const EXPLORER_BASE = 'https://solscan.io/tx';
 const DEFAULT_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 
 function getCluster() {
@@ -88,16 +90,113 @@ function getTokenMint() {
   return process.env.SOLANA_TOKEN_MINT || DEFAULT_USDC_MINT;
 }
 
+// Token account data size for rent-exempt ATA creation (~0.002 SOL)
+const TOKEN_ACCOUNT_SIZE = 165;
+const TX_FEE_LAMPORTS = 10_000n;
+
+function parseSolanaAddress(address) {
+  try {
+    return new PublicKey(address);
+  } catch {
+    throw new Error(`Invalid Solana address: ${address}`);
+  }
+}
+
+async function getTokenAccountAmount(connection, ata, tokenProgramId) {
+  try {
+    const account = await getAccount(connection, ata, 'confirmed', tokenProgramId);
+    return account.amount;
+  } catch {
+    return 0n;
+  }
+}
+
 async function getSplBalance(connection, owner, mintAddress) {
   try {
     const mint = new PublicKey(mintAddress);
-    const ata = await getAssociatedTokenAddress(mint, owner);
-    const account = await getAccount(connection, ata);
-    const mintInfo = await getMint(connection, mint);
+    const mintAccount = await connection.getAccountInfo(mint);
+    const tokenProgramId = mintAccount?.owner;
+    const ata = await getAssociatedTokenAddress(mint, owner, false, tokenProgramId);
+    const account = await getAccount(connection, ata, 'confirmed', tokenProgramId);
+    const mintInfo = await getMint(connection, mint, 'confirmed', tokenProgramId);
     return Number(account.amount) / 10 ** mintInfo.decimals;
   } catch {
     return 0;
   }
+}
+
+async function countMissingAtas(connection, mint, tokenProgramId, recipients) {
+  let missing = 0;
+  for (const recipient of recipients) {
+    const destAta = getAssociatedTokenAddressSync(
+      mint,
+      recipient,
+      false,
+      tokenProgramId
+    );
+    const info = await connection.getAccountInfo(destAta, 'confirmed');
+    if (!info) missing += 1;
+  }
+  return missing;
+}
+
+async function assertSenderCanFundAtas(connection, payer, missingAtaCount, transferCount) {
+  if (missingAtaCount <= 0 && transferCount <= 0) return;
+
+  const rentLamports = BigInt(
+    await connection.getMinimumBalanceForRentExemption(TOKEN_ACCOUNT_SIZE)
+  );
+  const solBalance = BigInt(await connection.getBalance(payer, 'confirmed'));
+  const required =
+    rentLamports * BigInt(missingAtaCount) + TX_FEE_LAMPORTS * BigInt(Math.max(transferCount, 1));
+
+  if (solBalance < required) {
+    const have = Number(solBalance) / LAMPORTS_PER_SOL;
+    const need = Number(required) / LAMPORTS_PER_SOL;
+    throw new Error(
+      `Insufficient SOL for fees/ATA rent. Have ${have.toFixed(6)} SOL, need at least ${need.toFixed(6)} SOL ` +
+        `(${missingAtaCount} new USDC account(s) × ~${(Number(rentLamports) / LAMPORTS_PER_SOL).toFixed(6)} SOL rent + fees).`
+    );
+  }
+}
+
+async function transferSplToRecipient({
+  connection,
+  keypair,
+  mint,
+  tokenProgramId,
+  fromAta,
+  recipientPubkey,
+  amount,
+}) {
+  const destAta = getAssociatedTokenAddressSync(
+    mint,
+    recipientPubkey,
+    false,
+    tokenProgramId
+  );
+
+  const tx = new Transaction().add(
+    createAssociatedTokenAccountIdempotentInstruction(
+      keypair.publicKey,
+      destAta,
+      recipientPubkey,
+      mint,
+      tokenProgramId
+    ),
+    createTransferInstruction(
+      fromAta,
+      destAta,
+      keypair.publicKey,
+      amount,
+      [],
+      tokenProgramId
+    )
+  );
+
+  return sendAndConfirmTransaction(connection, tx, [keypair], {
+    commitment: 'confirmed',
+  });
 }
 
 export default async function handler(req, res) {
@@ -159,20 +258,69 @@ export default async function handler(req, res) {
   try {
     const results = [];
 
+    // Validate recipients up front so invalid addresses fail clearly
+    const parsedRecipients = [];
+    for (let i = 0; i < recipients.length; i++) {
+      try {
+        parsedRecipients.push(parseSolanaAddress(recipients[i]));
+      } catch (error) {
+        results.push({
+          index: i,
+          recipient: recipients[i],
+          amount: amounts[i],
+          success: false,
+          error: error.message,
+        });
+        parsedRecipients.push(null);
+      }
+    }
+
+    const validIndexes = parsedRecipients
+      .map((pubkey, index) => (pubkey ? index : -1))
+      .filter((index) => index >= 0);
+
+    if (validIndexes.length === 0) {
+      res.json({
+        success: false,
+        summary: {
+          total: results.length,
+          successCount: 0,
+          failureCount: results.length,
+        },
+        results: results.map(({ index, ...rest }) => rest),
+      });
+      return;
+    }
+
     if (type === 'native') {
-      for (let i = 0; i < recipients.length; i++) {
+      const totalLamports = validIndexes.reduce((sum, i) => {
+        return sum + BigInt(Math.round(parseFloat(amounts[i]) * LAMPORTS_PER_SOL));
+      }, 0n);
+      const solBalance = BigInt(await connection.getBalance(keypair.publicKey, 'confirmed'));
+      const required = totalLamports + TX_FEE_LAMPORTS * BigInt(validIndexes.length);
+
+      if (solBalance < required) {
+        const have = Number(solBalance) / LAMPORTS_PER_SOL;
+        const need = Number(required) / LAMPORTS_PER_SOL;
+        res.status(400).json({
+          error: `Insufficient SOL. Have ${have.toFixed(6)} SOL, need at least ${need.toFixed(6)} SOL (transfers + fees).`,
+        });
+        return;
+      }
+
+      for (const i of validIndexes) {
         try {
-          const toPubkey = new PublicKey(recipients[i]);
           const lamports = Math.round(parseFloat(amounts[i]) * LAMPORTS_PER_SOL);
           const tx = new Transaction().add(
             SystemProgram.transfer({
               fromPubkey: keypair.publicKey,
-              toPubkey,
+              toPubkey: parsedRecipients[i],
               lamports,
             })
           );
           const signature = await sendAndConfirmTransaction(connection, tx, [keypair]);
           results.push({
+            index: i,
             recipient: recipients[i],
             amount: amounts[i],
             success: true,
@@ -181,6 +329,7 @@ export default async function handler(req, res) {
           });
         } catch (error) {
           results.push({
+            index: i,
             recipient: recipients[i],
             amount: amounts[i],
             success: false,
@@ -196,36 +345,75 @@ export default async function handler(req, res) {
       }
 
       const mint = new PublicKey(mintAddress);
-      const mintInfo = await getMint(connection, mint);
-      const fromAta = await getOrCreateAssociatedTokenAccount(
-        connection,
-        keypair,
+      const mintAccount = await connection.getAccountInfo(mint);
+      if (!mintAccount) {
+        res.status(400).json({ error: `Mint not found: ${mintAddress}` });
+        return;
+      }
+      const tokenProgramId = mintAccount.owner;
+      const mintInfo = await getMint(connection, mint, 'confirmed', tokenProgramId);
+      const fromAta = getAssociatedTokenAddressSync(
         mint,
-        keypair.publicKey
+        keypair.publicKey,
+        false,
+        tokenProgramId
       );
 
-      for (let i = 0; i < recipients.length; i++) {
+      const parsedAmounts = validIndexes.map((i) => {
+        const raw = parseFloat(amounts[i]);
+        if (!Number.isFinite(raw) || raw <= 0) {
+          throw new Error(`Invalid amount for ${recipients[i]}: ${amounts[i]}`);
+        }
+        return {
+          index: i,
+          amount: BigInt(Math.round(raw * 10 ** mintInfo.decimals)),
+        };
+      });
+
+      const totalTokenAmount = parsedAmounts.reduce((sum, item) => sum + item.amount, 0n);
+      const senderTokenBalance = await getTokenAccountAmount(
+        connection,
+        fromAta,
+        tokenProgramId
+      );
+
+      if (senderTokenBalance < totalTokenAmount) {
+        const have = Number(senderTokenBalance) / 10 ** mintInfo.decimals;
+        const need = Number(totalTokenAmount) / 10 ** mintInfo.decimals;
+        res.status(400).json({
+          error: `Insufficient USDC. Have ${have} USDC, need ${need} USDC for this batch.`,
+        });
+        return;
+      }
+
+      const validPubkeys = validIndexes.map((i) => parsedRecipients[i]);
+      const missingAtaCount = await countMissingAtas(
+        connection,
+        mint,
+        tokenProgramId,
+        validPubkeys
+      );
+      await assertSenderCanFundAtas(
+        connection,
+        keypair.publicKey,
+        missingAtaCount,
+        validIndexes.length
+      );
+
+      for (const item of parsedAmounts) {
+        const i = item.index;
         try {
-          const toPubkey = new PublicKey(recipients[i]);
-          const toAta = await getOrCreateAssociatedTokenAccount(
+          const signature = await transferSplToRecipient({
             connection,
             keypair,
             mint,
-            toPubkey
-          );
-          const amount = BigInt(
-            Math.round(parseFloat(amounts[i]) * 10 ** mintInfo.decimals)
-          );
-          const tx = new Transaction().add(
-            createTransferInstruction(
-              fromAta.address,
-              toAta.address,
-              keypair.publicKey,
-              amount
-            )
-          );
-          const signature = await sendAndConfirmTransaction(connection, tx, [keypair]);
+            tokenProgramId,
+            fromAta,
+            recipientPubkey: parsedRecipients[i],
+            amount: item.amount,
+          });
           results.push({
+            index: i,
             recipient: recipients[i],
             amount: amounts[i],
             success: true,
@@ -234,6 +422,7 @@ export default async function handler(req, res) {
           });
         } catch (error) {
           results.push({
+            index: i,
             recipient: recipients[i],
             amount: amounts[i],
             success: false,
@@ -243,6 +432,8 @@ export default async function handler(req, res) {
       }
     }
 
+    results.sort((a, b) => a.index - b.index);
+
     res.json({
       success: results.every((tx) => tx.success),
       summary: {
@@ -250,9 +441,9 @@ export default async function handler(req, res) {
         successCount: results.filter((tx) => tx.success).length,
         failureCount: results.filter((tx) => !tx.success).length,
       },
-      results,
+      results: results.map(({ index, ...rest }) => rest),
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 }
